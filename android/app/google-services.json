@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "832811627488",
+    "project_id": "clockproject-23139",
+    "storage_bucket": "clockproject-23139.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:832811627488:android:ca4ef953a663000a243185",
+        "android_client_info": {
+          "package_name": "com.example.menejemen_waktu"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDu6HQL5zQ4ob9Olk2_s5NcZDAQshQ3cp4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

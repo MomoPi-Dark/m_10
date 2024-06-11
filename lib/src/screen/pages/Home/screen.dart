@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:menejemen_waktu/src/Layout/profile_layout.dart';
+import 'package:menejemen_waktu/src/configs/colors.dart';
 import 'package:menejemen_waktu/src/controllers/theme_controller.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -37,9 +37,12 @@ class _HomeScreenState extends State<HomeScreen> {
           actions: [_buildThemeToggleButton()],
           titleSpacing: 16,
           elevation: 0,
+          backgroundColor: colorAppBar,
         ),
         body: Container(
-          color: themeData.themeDataNow().colorScheme.primary,
+          color: themeData.isDarkMode()
+              ? secondaryBackgroundColor
+              : primaryBackgroundColor,
           child: Column(
             children: [
               _buildTaskHeader(themeData),
@@ -97,10 +100,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildTaskHeader(ThemeController themeData) {
     return Container(
       padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 20),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.vertical(
           bottom: Radius.circular(20),
         ),
+        color: colorAppBar,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

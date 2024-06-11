@@ -54,12 +54,9 @@ class _AppScreenState extends State<AppScreen> {
     Container(),
   ];
 
-  late Widget currentScreen;
-
   void _onScreenTapped(int index) {
     setState(() {
       _bottomNavIndex = index;
-      currentScreen = _screens[index];
     });
   }
 

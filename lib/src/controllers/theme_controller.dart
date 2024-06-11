@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:menejemen_waktu/src/configs/colors.dart';
 
 const fontFamily = "SF Pro Display";
 const fontFamilyFallback = ["SF Pro Display", "SF Pro Text"];
@@ -18,24 +19,18 @@ class ThemeController extends GetxController {
     fontFamily: fontFamily,
     fontFamilyFallback: fontFamilyFallback,
     brightness: Brightness.light,
-    colorScheme: const ColorScheme.light(
-      brightness: Brightness.light,
-    ),
   );
 
   final ThemeData darkMode = ThemeData(
     fontFamily: fontFamily,
     fontFamilyFallback: fontFamilyFallback,
     brightness: Brightness.dark,
-    colorScheme: const ColorScheme.dark(
-      brightness: Brightness.dark,
-    ),
   );
 
   final _themeMode = ThemeMode.system.obs;
   Rx<ThemeMode> get themeMode => _themeMode;
 
-  Rx<ThemeData> get themeDataNow {
+  Rx<ThemeData> get currentTheme {
     switch (_themeMode.value) {
       case ThemeMode.light:
         return lightMode.obs;

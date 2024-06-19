@@ -1,0 +1,25 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "clockproject-23139",
+          "appId": "1:832811627488:android:ca4ef953a663000a243185",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/configs/firebase_options.dart": {
+          "projectId": "clockproject-23139",
+          "configurations": {
+            "android": "1:832811627488:android:ca4ef953a663000a243185",
+            "ios": "1:832811627488:ios:d099d948c4d53595243185",
+            "macos": "1:832811627488:ios:d099d948c4d53595243185",
+            "web": "1:832811627488:web:195b1833ee644b42243185",
+            "windows": "1:832811627488:web:841e0a8acd096b98243185"
+          }
+        }
+      }
+    }
+  }
+}

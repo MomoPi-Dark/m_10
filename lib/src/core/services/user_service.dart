@@ -66,8 +66,8 @@ class UserService {
       user.updatedAt = creationTime.toString();
 
       await docRef.update({
-        _requiredField: documentId,
-        "userId": authCreate.uid,
+        "id": documentId,
+        _requiredField: authCreate.uid,
         "isEmailVerified": authCreate.emailVerified,
         "createdAt": creationTime,
         "updatedAt": creationTime,

@@ -1,20 +1,20 @@
-
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:menejemen_waktu/configs_public/firebase_options.dart';
-import 'package:menejemen_waktu/routes.dart';
-import 'package:menejemen_waktu/src/core/controllers/user_controller.dart';
-import 'package:menejemen_waktu/wrapper.dart';
 
+import 'configs_public/firebase_options.dart';
+import 'routes.dart';
 import 'src/core/controllers/nav_select_controller.dart';
 import 'src/core/controllers/task_controller.dart';
 import 'src/core/controllers/theme_controller.dart';
+import 'src/core/controllers/user_controller.dart';
 import 'src/core/services/notification/config_notify_helper.dart';
 import 'src/core/services/notification/notify_helper.dart';
 import 'src/core/services/size_config_service.dart';
+import 'src/ui/screens/wrapper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

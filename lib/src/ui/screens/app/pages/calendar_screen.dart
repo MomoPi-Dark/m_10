@@ -7,7 +7,7 @@ import 'package:mat_month_picker_dialog/mat_month_picker_dialog.dart';
 import 'package:menejemen_waktu/src/core/controllers/task_controller.dart';
 import 'package:menejemen_waktu/src/core/controllers/theme_controller.dart';
 import 'package:menejemen_waktu/src/core/models/tasks_item_builder.dart';
-import 'package:menejemen_waktu/src/ui/screens/mobile/layout/layout_screen.dart';
+import 'package:menejemen_waktu/src/ui/screens/app/pages/layout_screen.dart';
 import 'package:menejemen_waktu/src/utils/contants/colors.dart';
 import 'package:menejemen_waktu/src/utils/contants/contants.dart';
 import 'package:timeline_tile/timeline_tile.dart';
@@ -118,10 +118,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ],
       ),
     );
-  }
-
-  Widget _buildDateBody() {
-    return _showTaskFilter();
   }
 
   Widget _showTaskFilter() {
@@ -387,14 +383,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
           bodyChild: Column(
             children: [
               Transform.scale(
-                scale: 0.90,
+                scale: 0.98,
                 child: _buildDatePicker(),
               ),
               const SizedBox(height: 10),
               _buildDateTitle(),
               const SizedBox(height: 10),
               Expanded(
-                child: _buildDateBody(),
+                child: _showTaskFilter(),
               ),
             ],
           ),

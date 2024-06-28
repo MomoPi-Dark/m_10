@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:menejemen_waktu/src/utils/contants/colors.dart';
+import 'package:menejemen_waktu/src/utils/contants/colors.2.0.dart';
 
 const fontFamily = "SF Pro Display";
 const fontFamilyFallback = ["SF Pro Display", "SF Pro Text"];
@@ -12,9 +13,9 @@ class ThemeController extends GetxController {
   final _themeMode = ThemeMode.system.obs;
 
   @override
-  void onInit() async {
+  void onInit() {
     super.onInit();
-    await init();
+    init();
   }
 
   Future<void> init() async {
@@ -23,46 +24,30 @@ class ThemeController extends GetxController {
     String? getTheme = storeTheme.read("theme");
 
     if (getTheme != null) {
-      setThemeData(parseThemeMode(getTheme));
+      setThemeData(parseThemeMode("light"));
     }
   }
 
   ThemeData get darkMode => ThemeData(
         fontFamily: fontFamily,
         fontFamilyFallback: fontFamilyFallback,
-        useMaterial3: true,
-        colorScheme: const ColorScheme.dark(
-          primary: dark,
-          secondary: dark2,
+        scaffoldBackgroundColor: DarkColor.primary(),
+        primaryColor: DarkColor.primary(),
+        appBarTheme: AppBarTheme(
+          backgroundColor: DarkColor.primary(),
+          iconTheme: IconThemeData(color: LightColor.primary()),
         ),
-        scaffoldBackgroundColor: dark2,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.transparent,
-        ),
-        // elevatedButtonTheme: ElevatedButtonThemeData(
-        //   style: ElevatedButton.styleFrom(
-        //     backgroundColor: dark,
-        //   ),
-        // ),
       );
 
   ThemeData get lightMode => ThemeData(
         fontFamily: fontFamily,
         fontFamilyFallback: fontFamilyFallback,
-        useMaterial3: true,
-        colorScheme: const ColorScheme.light(
-          primary: light,
-          secondary: light2,
+        scaffoldBackgroundColor: LightColor.primary(),
+        primaryColor: LightColor.primary(),
+        appBarTheme: AppBarTheme(
+          backgroundColor: LightColor.primary(),
+          iconTheme: IconThemeData(color: DarkColor.primary()),
         ),
-        scaffoldBackgroundColor: light2,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.transparent,
-        ),
-        // elevatedButtonTheme: ElevatedButtonThemeData(
-        //   style: ElevatedButton.styleFrom(
-        //     backgroundColor: light,
-        //   ),
-        // ),
       );
 
   Rx<ThemeMode> get themeMode => _themeMode;
@@ -83,6 +68,7 @@ class ThemeController extends GetxController {
   void setThemeData(ThemeMode themeMode) {
     _themeMode.value = themeMode;
     _setStoreTheme(themeMode);
+    _setUIColor();
   }
 
   ThemeMode parseThemeMode(String themeString) {
@@ -94,6 +80,23 @@ class ThemeController extends GetxController {
       default:
         return ThemeMode.system;
     }
+  }
+
+  void _setUIColor() {
+    ThemeData theme = currentTheme();
+
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: theme.appBarTheme.backgroundColor,
+        statusBarIconBrightness:
+            isDarkMode() ? Brightness.light : Brightness.dark,
+        statusBarBrightness: theme.brightness,
+        systemNavigationBarColor:
+            theme.bottomNavigationBarTheme.backgroundColor,
+        systemNavigationBarIconBrightness:
+            isDarkMode() ? Brightness.light : Brightness.dark,
+      ),
+    );
   }
 
   void _setStoreTheme(ThemeMode themeMode) {

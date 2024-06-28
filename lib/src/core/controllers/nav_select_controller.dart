@@ -2,9 +2,8 @@ import 'package:enefty_icons/enefty_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:menejemen_waktu/src/ui/custom/create_bar.dart';
-import 'package:menejemen_waktu/src/ui/screens/mobile/main/calendar_screen.dart';
-import 'package:menejemen_waktu/src/ui/screens/mobile/main/home_screen.dart';
-import 'package:menejemen_waktu/src/ui/screens/mobile/main/search_screen.dart';
+import 'package:menejemen_waktu/src/ui/screens/app/pages/calendar_screen.dart';
+import 'package:menejemen_waktu/src/ui/screens/app/pages/home/home_screen.dart';
 
 class NavSelectController extends GetxController {
   final RxInt _selectedIndex = (0).obs;
@@ -26,8 +25,6 @@ class NavSelectController extends GetxController {
         return const HomeScreen();
       case 1:
         return const CalendarScreen();
-      case 2:
-        return const SearchScreen();
       default:
         return const Scaffold(
           body: SafeArea(
@@ -51,14 +48,9 @@ class NavSelectController extends GetxController {
           label: 'Calendar',
         ),
         createNavDestination(
-          icon: EneftyIcons.search_normal_2_outline,
-          selectedIcon: EneftyIcons.search_status_2_bold,
-          label: 'Search',
-        ),
-        createNavDestination(
-          icon: EneftyIcons.more_circle_outline,
-          selectedIcon: EneftyIcons.more_circle_bold,
-          label: "More",
+          icon: EneftyIcons.setting_2_outline,
+          selectedIcon: EneftyIcons.setting_2_bold,
+          label: "Setting",
         ),
       ].obs;
 }

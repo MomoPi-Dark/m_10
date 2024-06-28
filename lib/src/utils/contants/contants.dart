@@ -2,19 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:menejemen_waktu/src/utils/contants/colors.dart';
 
-const double defaultPadding = 24;
-
+const double defaultPadding = 16.0;
 const int defaultDelayLoading = 1;
 
 enum StateLoadItems {
   none,
   loading,
   done,
-  error,
 }
 
-const EdgeInsetsGeometry defaultPaddingHorizontal =
-    EdgeInsets.symmetric(horizontal: defaultPadding);
+const EdgeInsetsGeometry defaultPaddingHorizontal = EdgeInsets.symmetric(
+  horizontal: defaultPadding,
+);
+
+const EdgeInsetsGeometry defaultPaddingVertical = EdgeInsets.symmetric(
+  vertical: defaultPadding,
+);
 
 const double defaultSizeIconAppBar = 23;
 

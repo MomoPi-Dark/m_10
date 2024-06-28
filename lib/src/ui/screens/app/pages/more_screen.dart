@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:menejemen_waktu/src/ui/screens/mobile/layout/layout_screen.dart';
+import 'package:menejemen_waktu/src/ui/screens/app/pages/layout_screen.dart';
 import 'package:menejemen_waktu/src/utils/contants/contants.dart';
 
 class MoreScreen extends StatefulWidget {

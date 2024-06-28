@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseService {
@@ -9,6 +8,8 @@ class DatabaseService {
     String collection, {
     required Object field,
     required Object isEqualTo,
+    int? limit,
+    bool? isNull,
     Object? isNotEqualTo,
     Object? isLessThan,
     Object? isLessThanOrEqualTo,
@@ -18,8 +19,6 @@ class DatabaseService {
     Iterable<Object?>? arrayContainsAny,
     Iterable<Object?>? whereIn,
     Iterable<Object?>? whereNotIn,
-    bool? isNull,
-    int? limit,
     DocumentSnapshot<Object?>? startAfter,
   }) async {
     try {
@@ -48,7 +47,8 @@ class DatabaseService {
 
       return await queryCollection.get();
     } catch (e) {
-      throw Exception(e);
+      log('Error in find: $e');
+      throw Exception('Error fetching data from $collection: $e');
     }
   }
 
@@ -89,9 +89,10 @@ class DatabaseService {
         return querySnapshot.docs.first;
       }
 
-      return null;
+      throw Exception("Document not found");
     } catch (e) {
-      throw Exception(e);
+      log('Error in findOne: $e');
+      throw Exception('Error fetching single document from $collection: $e');
     }
   }
 
@@ -135,13 +136,14 @@ class DatabaseService {
 
       return null;
     } catch (e) {
-      throw Exception(e);
+      log('Error in findOneAndUpdate: $e');
+      throw Exception('Error updating document in $collection: $e');
     }
   }
 
   Future<QueryDocumentSnapshot<Map<String, dynamic>>?> findOneAndDelete(
     String collection, {
-    required String field,
+    required Object field,
     required Object isEqualTo,
     Object? isNotEqualTo,
     Object? isLessThan,
@@ -178,7 +180,8 @@ class DatabaseService {
 
       return null;
     } catch (e) {
-      throw Exception(e);
+      log('Error in findOneAndDelete: $e');
+      throw Exception('Error deleting document in $collection: $e');
     }
   }
 
@@ -190,7 +193,13 @@ class DatabaseService {
     String collection,
     String documentId,
   ) async {
-    return await _firestore.collection(collection).doc(documentId).get();
+    try {
+      return await _firestore.collection(collection).doc(documentId).get();
+    } catch (e) {
+      log('Error in getDocument: $e');
+      throw Exception(
+          'Error fetching document $documentId from $collection: $e');
+    }
   }
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> getDocumentStream(
@@ -198,14 +207,20 @@ class DatabaseService {
     String documentId, {
     int? limit,
   }) {
-    if (limit != null) {
-      return _firestore
-          .collection(collection)
-          .doc(documentId)
-          .snapshots()
-          .take(limit);
-    } else {
-      return _firestore.collection(collection).doc(documentId).snapshots();
+    try {
+      if (limit != null) {
+        return _firestore
+            .collection(collection)
+            .doc(documentId)
+            .snapshots()
+            .take(limit);
+      } else {
+        return _firestore.collection(collection).doc(documentId).snapshots();
+      }
+    } catch (e) {
+      log('Error in getDocumentStream: $e');
+      throw Exception(
+          'Error streaming document $documentId from $collection: $e');
     }
   }
 
@@ -215,8 +230,13 @@ class DatabaseService {
     required Object isEqualTo,
     int? limit,
   }) async {
-    return find(collection, field: field, isEqualTo: isEqualTo, limit: limit)
-        .asStream();
+    try {
+      return find(collection, field: field, isEqualTo: isEqualTo, limit: limit)
+          .asStream();
+    } catch (e) {
+      log('Error in streamData: $e');
+      throw Exception('Error streaming data from $collection: $e');
+    }
   }
 
   Future<bool> hasCollection(String collection) async {
@@ -237,7 +257,8 @@ class DatabaseService {
     try {
       return await _firestore.collection(collection).add(data);
     } catch (e) {
-      throw Exception(e);
+      log('Error in addData: $e');
+      throw Exception('Error adding data to $collection: $e');
     }
   }
 }

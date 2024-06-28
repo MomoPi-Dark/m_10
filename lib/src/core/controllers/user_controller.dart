@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:menejemen_waktu/src/core/models/user_builder.dart';
@@ -11,56 +12,58 @@ class UserController extends GetxController {
   final AuthService _auth = AuthService();
   final AuthService _authData = AuthService();
   final DatabaseService _db = DatabaseService();
-  final String _requiredField = 'userId';
-  final String _tableName = 'users';
 
   final Rx<UserBuilder?> _user = Rx<UserBuilder?>(null);
-  UserBuilder? get currentUser => _user.value;
-
-  final Rx<StateLoadItems> _connectionState = StateLoadItems.none.obs;
-  Rx<StateLoadItems> get connectionState => _connectionState;
 
   StreamSubscription<DocumentSnapshot>? _userSubscription;
 
-  Future<void> initScreen() async {
-    if (_authData.currentUser == null ||
-        _connectionState.value == StateLoadItems.done) {
-      return;
+  bool get isReady => _user.value != null;
+
+  final String _requiredField = 'userId';
+  final String _tableName = 'users';
+
+  @override
+  void onClose() {
+    _userSubscription?.cancel();
+    super.onClose();
+  }
+
+  UserBuilder? get currentUser => _user.value;
+
+  Future<UserBuilder?> initScreen() async {
+    if (_authData.currentUser == null || _user.value != null) {
+      return null;
     }
 
-    await _initState(() async {
-      var user = await getUser(_authData.currentUser!.uid);
+    var user = await getUser(_authData.currentUser!.uid);
 
-      if (user == null) {
-        return;
-      }
+    if (user == null) {
+      log('User data tidak ditemukan pada saat inisialisasi layar');
+      return null;
+    }
 
-      _subscribeToUser(user.id);
-    });
+    _user.value = user;
 
-    log('User screen initialized');
+    _subscribeToUser(user.id);
+
+    log('User screen initialized ${_user.value?.displayName}');
+
+    return user;
   }
 
   Future<void> initCloseScreen() async {
-    if (_authData.currentUser != null ||
-        _connectionState.value == StateLoadItems.none) {
+    if (_authData.currentUser != null || _user.value == null) {
       return;
     }
 
-    await _initState(() async {
-      _userSubscription?.cancel();
-      _user.value = null;
-    });
-
-    _setStateLoad(StateLoadItems.none);
+    _user.value = null;
+    await _userSubscription?.cancel();
 
     log('User screen closed');
   }
 
   Future<UserBuilder?> updateUser(UserBuilder user) async {
-    if (_authData.currentUser == null) {
-      return null;
-    }
+    if (_authData.currentUser == null) return null;
 
     final data = await _db.findOneAndUpdate(
       _tableName,
@@ -69,9 +72,7 @@ class UserController extends GetxController {
       data: user.toJson(),
     );
 
-    if (data == null) {
-      return null;
-    }
+    if (data == null) return null;
 
     _user.value = UserBuilder.fromJson(data.data());
     return _user.value;
@@ -88,7 +89,11 @@ class UserController extends GetxController {
 
   Future<void> login(String email, String password) async {
     try {
-      await _authData.loginUserWithEmailAndPassword(email, password);
+      await _authData.loginUserWithEmailAndPassword(
+        email,
+        password,
+      );
+      await initScreen();
       Get.offAllNamed("/app");
     } catch (e) {
       log('Error in login: $e');
@@ -100,6 +105,7 @@ class UserController extends GetxController {
     try {
       await _authData.signOut(redirect: '/');
       await _userSubscription?.cancel();
+      await initCloseScreen();
     } catch (e) {
       log('Error in logout: $e');
       throw Exception(e);
@@ -113,9 +119,7 @@ class UserController extends GetxController {
       isEqualTo: userId,
     );
 
-    if (data == null) {
-      return null;
-    }
+    if (data == null) return null;
 
     return UserBuilder.fromJson(data.data());
   }
@@ -163,8 +167,8 @@ class UserController extends GetxController {
       (documentSnapshot) async {
         if (documentSnapshot.exists) {
           final userData = documentSnapshot.data();
-
           if (userData != null) {
+            await Future.delayed(const Duration(milliseconds: 500));
             _user.value = UserBuilder.fromJson(userData);
             log('User data updated: ${_user.value?.displayName}');
           } else {
@@ -178,30 +182,5 @@ class UserController extends GetxController {
         throw Exception('Error subscribing to user data: $e');
       },
     );
-  }
-
-  Future<void> _initState(Function action) async {
-    await _setStateLoad(StateLoadItems.loading);
-
-    try {
-      await action();
-    } catch (e) {
-      await _setStateLoad(StateLoadItems.error);
-      log('Error in _initState: $e');
-      rethrow;
-    }
-
-    await _setStateLoad(StateLoadItems.done);
-  }
-
-  Future<void> _setStateLoad(StateLoadItems value) async {
-    await Future.delayed(const Duration(milliseconds: 2));
-    _connectionState.value = value;
-  }
-
-  @override
-  void onClose() {
-    _userSubscription?.cancel();
-    super.onClose();
   }
 }

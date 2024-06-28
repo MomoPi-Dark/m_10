@@ -22,7 +22,6 @@ class _CustomButtonState extends State<CustomButton> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 25),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [

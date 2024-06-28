@@ -10,67 +10,92 @@ import 'package:menejemen_waktu/src/utils/contants/contants.dart';
 
 const String dateTimeTaskFormat = "hh:mm:ss:SSS";
 const String dateTaskFormat = "yyyy-MM-dd";
-const int taskLimit = 20; // Limit untuk pagination
+const int taskLimit = 20;
 
 class TaskController extends GetxController {
   final AuthService _auth = AuthService();
   final String _collectionName = 'tasks';
+  final Rx<StateLoadItems> _connectionState = StateLoadItems.loading.obs;
   final DatabaseService _db = DatabaseService();
+  DocumentSnapshot? _lastDocument;
   String? _recordId;
   final String _requiredField = 'userId';
   final RxList<TaskItemBuilder> _taskCache = <TaskItemBuilder>[].obs;
 
   RxList<TaskItemBuilder> get tasks => _taskCache;
 
-  final Rx<StateLoadItems> _connectionState = StateLoadItems.none.obs;
   Rx<StateLoadItems> get connectionState => _connectionState;
 
-  DocumentSnapshot? _lastDocument;
-
-  void initScreen() async {
-    if (_auth.currentUser == null ||
-        _connectionState.value == StateLoadItems.done) {
-      return;
-    }
-
-    await _initState(() async {
-      if (_taskCache.isNotEmpty) {
-        _taskCache.clear();
-        _lastDocument = null;
-      }
-
-      _recordId ??= _auth.currentUser!.uid;
-
-      await loadTasks();
-    });
-
-    log('Task screen initialized');
+  List<TaskItemBuilder> getTasks({int? limit}) {
+    return _taskCache.take(limit ?? taskLimit).toList();
   }
 
-  void initCloseScreen() async {
+  TaskItemBuilder getTask({String? id, TaskItemBuilder? task}) {
+    if (id != null && task != null) {
+      throw Exception('You can only pass one argument, either id or task.');
+    }
+
+    if (id != null) {
+      return _taskCache.firstWhere((t) => t.id == id);
+    }
+
+    if (task != null) {
+      return _taskCache.firstWhere((t) => t == task);
+    }
+
+    throw Exception('You must pass either id or task.');
+  }
+
+  Future<List<TaskItemBuilder>> initScreen() async {
+    if (_auth.currentUser == null ||
+        _taskCache.isNotEmpty ||
+        _connectionState.value == StateLoadItems.done) {
+      return _taskCache;
+    }
+
+    await _setStateLoad(StateLoadItems.loading);
+
+    try {
+      _recordId ??= _auth.currentUser!.uid;
+      await loadTasks(limit: taskLimit);
+    } catch (e) {
+      log('Error initializing task screen: $e');
+    }
+
+    await _setStateLoad(StateLoadItems.done);
+
+    return _taskCache;
+  }
+
+  Future<void> initCloseScreen() async {
     if (_auth.currentUser != null ||
         _connectionState.value == StateLoadItems.none) {
       return;
     }
 
-    await _initState(() {
-      if (_taskCache.isNotEmpty) {
-        _taskCache.clear();
-      }
+    await _setStateLoad(
+      StateLoadItems.loading,
+    );
 
-      _lastDocument = null;
-      _recordId = null;
-    });
+    if (_taskCache.isNotEmpty) {
+      _taskCache.clear();
+    }
 
-    await _setStateLoad(StateLoadItems.none);
+    _lastDocument = null;
+    _recordId = null;
+
+    await _setStateLoad(
+      StateLoadItems.none,
+    );
 
     log('Task screen closed');
   }
 
-  Future<void> loadTasks({bool loadMore = false}) async {
+  Future<void> loadTasks({bool loadMore = false, int? limit}) async {
     if (!await _db.hasCollection(_collectionName) ||
         _auth.currentUser == null ||
-        _recordId == null) {
+        _recordId == null ||
+        _taskCache.isNotEmpty) {
       return;
     }
 
@@ -79,7 +104,7 @@ class TaskController extends GetxController {
         _collectionName,
         field: _requiredField,
         isEqualTo: _auth.currentUser!.uid,
-        limit: taskLimit,
+        limit: limit,
         startAfter: loadMore && _lastDocument != null ? _lastDocument : null,
       );
 
@@ -104,16 +129,22 @@ class TaskController extends GetxController {
   }
 
   Future<void> addTask(TaskItemBuilder task) async {
-    if (!await _db.hasCollection(_collectionName) || _recordId == null) {
+    if (_recordId == null) {
       return;
     }
 
     try {
-      task.userId = _auth.currentUser!.uid;
       DocumentReference docRef =
           await _db.addData(_collectionName, task.toJson());
+      task.userId = _auth.currentUser!.uid;
       task.id = docRef.id;
       _taskCache.add(task);
+
+      docRef.update({
+        'id': docRef.id,
+        'userId': _auth.currentUser!.uid,
+      });
+
       log('Task successfully added: ${task.id}');
     } catch (e) {
       log('Error adding task: $e');
@@ -127,16 +158,22 @@ class TaskController extends GetxController {
     }
 
     try {
+      task.updatedAt = DateTime.now().toString();
+
       await _db.findOneAndUpdate(
         _collectionName,
         field: "id",
         isEqualTo: task.id,
         data: task.toJson(),
       );
+
       int index = _taskCache.indexWhere((t) => t.id == task.id);
+
       if (index != -1) {
         _taskCache[index] = task;
         log('Task successfully updated: ${task.id}');
+      } else {
+        log('Task not found: ${task.id}');
       }
     } catch (e) {
       log('Error updating task: $e');
@@ -155,7 +192,9 @@ class TaskController extends GetxController {
         field: 'id',
         isEqualTo: task.id,
       );
+
       _taskCache.removeWhere((t) => t.id == task.id);
+
       log('Task successfully deleted: ${task.id}');
     } catch (e) {
       log("Error deleting task: $e");
@@ -163,7 +202,7 @@ class TaskController extends GetxController {
     }
   }
 
-  Future<TaskItemBuilder?> getTask(String id) async {
+  Future<TaskItemBuilder?> _getTask(String id) async {
     try {
       if (_auth.currentUser == null) return null;
 
@@ -182,22 +221,8 @@ class TaskController extends GetxController {
     }
   }
 
-  Future<void> _initState(Function action) async {
-    await _setStateLoad(StateLoadItems.loading);
-
-    try {
-      await action();
-    } catch (e) {
-      await _setStateLoad(StateLoadItems.error);
-      log('Error in _initState: $e');
-      rethrow;
-    }
-
-    await _setStateLoad(StateLoadItems.done);
-  }
-
-  Future<void> _setStateLoad(StateLoadItems value) async {
-    await Future.delayed(const Duration(milliseconds: 5));
+  Future<void> _setStateLoad(StateLoadItems value, {int delay = 1}) async {
+    await Future.delayed(Duration(milliseconds: delay));
     _connectionState.value = value;
   }
 }

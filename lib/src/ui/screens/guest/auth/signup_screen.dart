@@ -71,18 +71,21 @@ class _SignupScreenState extends State<SignupScreen> {
               height: 50,
             ),
             CustomTextField(
+              onChanged: (value) {},
               hint: "Enter Name",
               label: "Name",
               controller: _name,
             ),
             const SizedBox(height: 20),
             CustomTextField(
+              onChanged: (value) {},
               hint: "Enter Email",
               label: "Email",
               controller: _email,
             ),
             const SizedBox(height: 20),
             CustomTextField(
+              onChanged: (value) {},
               hint: "Enter Password",
               label: "Password",
               isPassword: true,

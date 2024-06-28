@@ -4,24 +4,35 @@ import 'package:menejemen_waktu/src/core/controllers/theme_controller.dart';
 
 class BlueLightColors {
   static Color get color1 => const Color(0xFFF0F3FA);
+
   static Color get color2 => const Color(0xFFD5DEEF);
+
   static Color get color3 => const Color(0xFFB1C9EF);
+
   static Color get color4 => const Color(0xFF8AAEE0);
+
   static Color get color5 => const Color(0xFF638ECB);
+
   static Color get color6 => const Color(0xFF395886);
 }
 
 class BlueDarkColors {
   static Color get color1 => const Color(0xFF032030);
+
   static Color get color2 => const Color(0xFF022B42);
+
   static Color get color3 => const Color(0xFF003554);
+
   static Color get color4 => const Color(0xFF004D74);
+
   static Color get color5 => const Color(0xFF006494);
+
   static Color get color6 => const Color(0xFF006DA4);
 }
 
 const Color light = Color(0xFFf1f1f3);
 const Color light2 = Color(0xFFF8F8F8);
+const Color light3 = Color(0xFFf7f7f7);
 const Color dark = Color(0xFF212121);
 const Color dark2 = Color(0xFF1A1A1A);
 const Color yellow = Color(0xFFfcd36a);
@@ -44,13 +55,18 @@ Color createThemeColorSchema(
   return Get.find<ThemeController>().isDarkMode() ? darkColor : lightColor;
 }
 
+Color get defaultCustomPrimaryLayoutColor => createThemeColorSchema(
+      lightColor: Colors.white,
+      darkColor: Colors.black,
+    );
+
 Color get customPrimaryLayoutColor => createThemeColorSchema(
       lightColor: light,
       darkColor: dark,
     );
 
 Color get customSecondaryLayoutColor => createThemeColorSchema(
-      lightColor: light2,
+      lightColor: light3,
       darkColor: dark2,
     );
 

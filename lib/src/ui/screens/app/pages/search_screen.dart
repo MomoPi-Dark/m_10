@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:menejemen_waktu/src/core/controllers/task_controller.dart';
 import 'package:menejemen_waktu/src/core/models/tasks_item_builder.dart';
-import 'package:menejemen_waktu/src/ui/screens/mobile/layout/layout_screen.dart';
+import 'package:menejemen_waktu/src/ui/screens/app/pages/layout_screen.dart';
+
 import 'package:menejemen_waktu/src/utils/contants/colors.dart';
 import 'package:menejemen_waktu/src/utils/contants/contants.dart';
 

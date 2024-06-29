@@ -19,6 +19,21 @@ import 'src/ui/screens/wrapper.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await GetStorage.init();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  await NotificationHelper.configureLocalTimeZone();
+
+  await NotificationHelper().initialize(
+    null,
+    channels,
+    channelGroups: groups,
+    debug: true,
+  );
+
+  await NotificationHelper.checkNotificationPermission(channelGlobalKey);
+  await NotificationHelper.checkNotificationPermission(channelScheduleKey);
+
   await AwesomeNotifications().setListeners(
     onNotificationDisplayedMethod:
         NotificationHelper.onNotificationDisplayedMethod,
@@ -26,17 +41,6 @@ void main() async {
     onDismissActionReceivedMethod:
         NotificationHelper.onDismissActionReceivedMethod,
     onNotificationCreatedMethod: NotificationHelper.onNotificationCreatedMethod,
-  );
-  await NotificationHelper.configureLocalTimeZone();
-
-  await GetStorage.init();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  await NotificationHelper().initialize(
-    null,
-    channels,
-    channelGroups: groups,
-    debug: true,
   );
 
   Get.put(ThemeController());
@@ -65,10 +69,10 @@ class MyApp extends StatelessWidget {
         darkTheme: themeProvider.darkMode,
         themeMode: themeProvider.themeMode(),
         debugShowCheckedModeBanner: false,
-        showSemanticsDebugger: false,
         locale: const Locale('id', 'ID'),
         onUnknownRoute: (settings) {
           return MaterialPageRoute(
+            fullscreenDialog: true,
             builder: (context) => const Scaffold(
               body: Center(
                 child: Text('Page not found'),

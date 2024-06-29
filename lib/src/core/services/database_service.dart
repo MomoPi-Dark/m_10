@@ -198,7 +198,8 @@ class DatabaseService {
     } catch (e) {
       log('Error in getDocument: $e');
       throw Exception(
-          'Error fetching document $documentId from $collection: $e');
+        'Error fetching document $documentId from $collection: $e',
+      );
     }
   }
 

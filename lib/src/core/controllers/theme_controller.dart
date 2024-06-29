@@ -24,7 +24,7 @@ class ThemeController extends GetxController {
     String? getTheme = storeTheme.read("theme");
 
     if (getTheme != null) {
-      setThemeData(parseThemeMode("light"));
+      setThemeData(parseThemeMode(getTheme));
     }
   }
 
@@ -33,6 +33,10 @@ class ThemeController extends GetxController {
         fontFamilyFallback: fontFamilyFallback,
         scaffoldBackgroundColor: DarkColor.primary(),
         primaryColor: DarkColor.primary(),
+        colorScheme: ColorScheme.dark(
+          primary: DarkColor.primary(),
+          secondary: DarkColor.secondary(),
+        ),
         appBarTheme: AppBarTheme(
           backgroundColor: DarkColor.primary(),
           iconTheme: IconThemeData(color: LightColor.primary()),
@@ -44,6 +48,10 @@ class ThemeController extends GetxController {
         fontFamilyFallback: fontFamilyFallback,
         scaffoldBackgroundColor: LightColor.primary(),
         primaryColor: LightColor.primary(),
+        colorScheme: ColorScheme.light(
+          primary: LightColor.primary(),
+          secondary: LightColor.secondary(),
+        ),
         appBarTheme: AppBarTheme(
           backgroundColor: LightColor.primary(),
           iconTheme: IconThemeData(color: DarkColor.primary()),

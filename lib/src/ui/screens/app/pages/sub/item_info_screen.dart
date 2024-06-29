@@ -26,7 +26,7 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
       ),
       body: Center(
         child: Text(
-            "Item Info Screen ${dataFromJson.userId} ${dataFromJson.isCompleted == 1 ? "Completed" : "Not Completed"}"),
+            "Item Info Screen ${dataFromJson.userId} ${dataFromJson.isTimeExceeded == 1 ? "Completed" : "Not Completed"}"),
       ),
     );
   }

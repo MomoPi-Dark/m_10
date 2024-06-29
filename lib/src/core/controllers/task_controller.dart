@@ -136,14 +136,15 @@ class TaskController extends GetxController {
     try {
       DocumentReference docRef =
           await _db.addData(_collectionName, task.toJson());
+
       task.userId = _auth.currentUser!.uid;
       task.id = docRef.id;
+      task.createdAt = DateTime.now().toString();
+      task.updatedAt = DateTime.now().toString();
+
       _taskCache.add(task);
 
-      docRef.update({
-        'id': docRef.id,
-        'userId': _auth.currentUser!.uid,
-      });
+      await docRef.update(task.toJson());
 
       log('Task successfully added: ${task.id}');
     } catch (e) {

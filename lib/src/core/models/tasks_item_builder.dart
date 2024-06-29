@@ -11,7 +11,7 @@ String taskItemBuilderToJson(TaskItemBuilder data) =>
 class TaskItemBuilder {
   TaskItemBuilder({
     this.id = "",
-    required this.userId,
+    this.userId = "",
     required this.label,
     required this.title,
     required this.note,
@@ -21,9 +21,9 @@ class TaskItemBuilder {
     required this.remind,
     required this.repeat,
     required this.color,
-    required this.isCompleted,
-    required this.createdAt,
-    required this.updatedAt,
+    required this.isTimeExceeded,
+    this.createdAt = "",
+    this.updatedAt = "",
   });
 
   factory TaskItemBuilder.fromJson(Map<String, dynamic> json) {
@@ -39,7 +39,7 @@ class TaskItemBuilder {
       remind: json['remind'],
       repeat: json['repeat'],
       color: json['color'],
-      isCompleted: json['isCompleted'],
+      isTimeExceeded: json['isTimeExceeded'],
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
     );
@@ -50,7 +50,7 @@ class TaskItemBuilder {
   String date;
   String endTime;
   String id;
-  int isCompleted;
+  int isTimeExceeded;
   String label;
   String note;
   int remind;
@@ -73,7 +73,7 @@ class TaskItemBuilder {
       'remind': remind,
       'repeat': repeat,
       'color': color,
-      'isCompleted': isCompleted,
+      'isTimeExceeded': isTimeExceeded,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
     };

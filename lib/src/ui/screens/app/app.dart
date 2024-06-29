@@ -35,14 +35,6 @@ class _AppScreenState extends State<AppScreen> with WidgetsBindingObserver {
       Get.snackbar("Error messages", "You are not logged in!");
       Get.offAllNamed(initialRoute);
     }
-
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
   }
 
   Widget _buildBottomNavigationBar() {
@@ -54,12 +46,11 @@ class _AppScreenState extends State<AppScreen> with WidgetsBindingObserver {
             (Set<WidgetState> states) {
               if (states.contains(WidgetState.selected)) {
                 return navBarTextStyle.copyWith(
-                  fontWeight: FontWeight.bold,
+                  color: customBottomNavbarIconSelectedLayoutColor,
                 );
               }
-              return navBarTextStyle.copyWith(
-                fontWeight: FontWeight.w100,
-              );
+
+              return navBarTextStyle;
             },
           ),
           iconTheme: WidgetStateProperty.resolveWith<IconThemeData?>(
@@ -76,13 +67,16 @@ class _AppScreenState extends State<AppScreen> with WidgetsBindingObserver {
             },
           ),
         ),
-        child: NavigationBar(
-          destinations: navData.destinations,
-          onDestinationSelected: (i) {
-            navData.changeDestination(i);
-          },
-          selectedIndex: navData.selectedIndex,
-          animationDuration: const Duration(milliseconds: 200),
+        child: Container(
+          color: themeData.currentTheme().colorScheme.secondary,
+          child: NavigationBar(
+            destinations: navData.destinations,
+            onDestinationSelected: (i) {
+              navData.changeDestination(i);
+            },
+            selectedIndex: navData.selectedIndex,
+            animationDuration: const Duration(milliseconds: 200),
+          ),
         ),
       );
     });
@@ -94,7 +88,9 @@ class _AppScreenState extends State<AppScreen> with WidgetsBindingObserver {
       child: Scaffold(
         bottomNavigationBar: _buildBottomNavigationBar(),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            Get.toNamed('/addtask');
+          },
           child: Icon(
             FontAwesomeIcons.plus,
             color: customPrimaryTextColor,

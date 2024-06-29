@@ -76,7 +76,7 @@ NavigationDestination createNavDestination({
       crycleColor: barColor,
       icon: Icon(
         icon,
-        size: 25,
+        size: 24,
       ),
     ),
     selectedIcon: createIconNotif(
@@ -86,7 +86,7 @@ NavigationDestination createNavDestination({
       crycleColor: barColor,
       icon: Icon(
         selectedIcon,
-        size: 25,
+        size: 24,
       ),
     ),
     label: label,

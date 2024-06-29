@@ -8,6 +8,8 @@ import 'package:menejemen_waktu/src/core/controllers/task_controller.dart';
 import 'package:menejemen_waktu/src/core/controllers/theme_controller.dart';
 import 'package:menejemen_waktu/src/core/models/tasks_item_builder.dart';
 import 'package:menejemen_waktu/src/ui/screens/app/pages/layout_screen.dart';
+import 'package:menejemen_waktu/src/ui/widgets/taskcard.dart';
+import 'package:menejemen_waktu/src/utils/contants/colors.2.0.dart';
 import 'package:menejemen_waktu/src/utils/contants/colors.dart';
 import 'package:menejemen_waktu/src/utils/contants/contants.dart';
 import 'package:timeline_tile/timeline_tile.dart';
@@ -86,7 +88,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('Tasks', style: bodyTextStyle.copyWith(fontSize: 20)),
+          Text(
+            'Tasks',
+            style: bodyTitleTextStyle.copyWith(
+              fontSize: 20,
+            ),
+          ),
           const SizedBox(width: 10),
           DropdownButton(
             hint: Text(
@@ -140,44 +147,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
       itemBuilder: (context, index) {
         final TaskItemBuilder task = tasks[index];
 
-        final startTime = DateFormat(dateTimeTaskFormat).parse(task.startTime);
-        final endTime = DateFormat(dateTimeTaskFormat).parse(task.endTime);
-
         return Container(
-          padding: defaultPaddingHorizontal,
+          padding: defaultPaddingHorizontal.add(
+            const EdgeInsets.only(top: 10, bottom: 10),
+          ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                margin: const EdgeInsets.only(left: 8.5),
                 child: _buildTimeLine(colorList[task.color]),
               ),
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.only(left: 40),
-                  child: Card(
-                    color: customPrimaryLayoutColor,
-                    child: ListTile(
-                      title: Text(
-                        task.title,
-                        style: GoogleFonts.roboto(
-                          textStyle: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      subtitle: Text(
-                        "${startTime.hour}:${startTime.minute} - ${endTime.hour}:${endTime.minute}",
-                        style: GoogleFonts.roboto(
-                          textStyle: const TextStyle(
-                            fontSize: 15,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+              const SizedBox(
+                width: 35,
+              ),
+              TaskCard(
+                task: task,
               )
             ],
           ),
@@ -218,56 +202,59 @@ class _CalendarScreenState extends State<CalendarScreen> {
       color: color,
       elevation: 5,
       borderRadius: BorderRadius.circular(5),
-      child: Container(
-        width: 20,
-        height: 20,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-        ),
-        child: const Center(
-          child: Icon(
-            Icons.check,
-            size: 15,
-          ),
-        ),
+      child: Icon(
+        Icons.timelapse,
+        size: 15,
       ),
+      // child: Container(
+      //   width: 20,
+      //   height: 20,
+      //   decoration: BoxDecoration(
+      //     borderRadius: BorderRadius.circular(5),
+      //   ),
+      //   child: const Center(
+      //     child: Icon(
+      //       Icons.check,
+      //       size: 15,
+      //     ),
+      //   ),
+      // ),
     );
   }
 
   Widget _buildDatePicker() {
     int daysInMonth = getDaysInMonth(_resultDate.year, _resultDate.month);
-    Color color = customHeaderCalenderTextLayoutColor;
-    Color selectedColor = customHeaderCalenderSelectedTextLayoutColor;
 
-    return DatePicker(
-      DateTime(_resultDate.year, _resultDate.month),
-      initialSelectedDate: _resultDate,
-      onDateChange: _changeSelectedDate,
-      height: 100,
-      width: 50,
-      controller: _dateController,
-      daysCount: daysInMonth,
-      selectedTextColor: selectedColor,
-      dateTextStyle: GoogleFonts.lato(
-        textStyle: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
+    return Obx(() {
+      return DatePicker(
+        DateTime(_resultDate.year, _resultDate.month),
+        initialSelectedDate: _resultDate,
+        onDateChange: _changeSelectedDate,
+        height: 100,
+        width: 50,
+        controller: _dateController,
+        daysCount: daysInMonth,
+        selectionColor:
+            createThemeColorSchema(lightColor: orange0, darkColor: yellow0),
+        dateTextStyle: GoogleFonts.lato(
+          textStyle: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-      ),
-      dayTextStyle: GoogleFonts.lato(
-        textStyle: TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: color,
+        dayTextStyle: GoogleFonts.lato(
+          textStyle: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-      ),
-      monthTextStyle: GoogleFonts.lato(
-        textStyle: TextStyle(
-          fontWeight: FontWeight.w600,
-          color: color,
+        monthTextStyle: GoogleFonts.lato(
+          textStyle: TextStyle(
+            fontWeight: FontWeight.w600,
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   void _changeSelectedDate(DateTime date) {
@@ -338,11 +325,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
       DateTime taskDate = DateFormat(dateTaskFormat).parse(task.date, true);
       return taskDate.isAtSameMomentAs(formattedResultDate);
     });
-  }
-
-  Iterable<TaskItemBuilder> _filterByCompleted(bool isCompleted) {
-    int isCompletedInt = isCompleted ? 1 : 0;
-    return _filterByDate().where((task) => task.isCompleted == isCompletedInt);
   }
 
   @override

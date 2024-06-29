@@ -78,25 +78,47 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildBody() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _searchItem(),
-        const SizedBox(height: 10),
-        Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: Text(
-            "Schedule Today",
-            style: GoogleFonts.varelaRound().copyWith(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+    return SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _searchItem(),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: Text(
+                  "Upcoming Schedule",
+                  style: bodyTitleTextStyle.copyWith(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: IconButton(
+                  onPressed: () {
+                    navData.changeDestination(1);
+                  },
+                  icon: Text(
+                    "View All",
+                    style: bodyTitleTextStyle.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
-        Expanded(
-          child: _buildItems(),
-        ),
-      ],
+          Expanded(
+            child: _buildItems(),
+          ),
+        ],
+      ),
     );
   }
 
@@ -123,36 +145,6 @@ class _HomeScreenState extends State<HomeScreen> {
           itemCount: tasks.length,
           itemBuilder: (context, index) {
             var task = tasks[index];
-
-            return ListTile(
-              title: Text(
-                task.title,
-                style: bodyTextStyle.copyWith(),
-              ),
-              onTap: () {
-                Get.toNamed(
-                  "/getinfo",
-                  arguments: task.toJson(),
-                );
-              },
-              leading: Checkbox(
-                fillColor: WidgetStateProperty.all<Color>(Colors.blue),
-                value: task.isCompleted == 1 ? true : false,
-                onChanged: (value) {
-                  setState(() {
-                    task.isCompleted = value == true ? 1 : 0;
-                    taskData.updateTask(task);
-                    log("Task is completed: $value");
-                  });
-                },
-              ),
-              subtitle: Text(
-                task.note,
-                style: bodyTextStyle.copyWith(
-                  color: Colors.grey,
-                ),
-              ),
-            );
           },
         );
       },
@@ -160,40 +152,42 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _searchItem() {
-    return Container(
-      height: 70,
-      padding: const EdgeInsets.symmetric(horizontal: 2),
-      child: TextField(
-        readOnly: true,
-        keyboardType: TextInputType.text,
-        onTap: () {
-          setState(() {
-            Get.toNamed("/search");
-          });
-        },
-        cursorColor: customSecondaryTextColor,
-        decoration: InputDecoration(
-          fillColor: defaultCustomPrimaryLayoutColor,
-          filled: true,
-          prefixIcon: const Icon(
-            Icons.search_rounded,
-            color: Colors.grey,
+    return Obx(() {
+      return Container(
+        height: 70,
+        padding: const EdgeInsets.symmetric(horizontal: 2),
+        child: TextField(
+          readOnly: true,
+          keyboardType: TextInputType.text,
+          onTap: () {
+            setState(() {
+              Get.toNamed("/search");
+            });
+          },
+          cursorColor: customSecondaryTextColor,
+          decoration: InputDecoration(
+            fillColor: defaultCustomPrimaryLayoutColor,
+            filled: true,
+            prefixIcon: const Icon(
+              Icons.search_rounded,
+              color: Colors.grey,
+            ),
+            hintText: "Search...",
+            hintStyle: GoogleFonts.karla(
+              color: Colors.grey,
+              fontWeight: FontWeight.w500,
+            ),
+            hoverColor: customSecondaryLayoutColor,
+            border: _buildBorder(),
+            enabledBorder: _buildBorder(),
+            disabledBorder: _buildBorder(),
+            suffixIconColor: Colors.grey,
+            prefixIconColor: Colors.grey,
+            counterStyle: TextStyle(color: customSecondaryTextColor),
           ),
-          hintText: "Search...",
-          hintStyle: GoogleFonts.karla(
-            color: Colors.grey,
-            fontWeight: FontWeight.w500,
-          ),
-          hoverColor: customSecondaryLayoutColor,
-          border: _buildBorder(),
-          enabledBorder: _buildBorder(),
-          disabledBorder: _buildBorder(),
-          suffixIconColor: Colors.grey,
-          prefixIconColor: Colors.grey,
-          counterStyle: TextStyle(color: customSecondaryTextColor),
         ),
-      ),
-    );
+      );
+    });
   }
 
   @override
@@ -202,10 +196,23 @@ class _HomeScreenState extends State<HomeScreen> {
       title: _buildTitle(),
       actions: [
         IconButton(
-            onPressed: () async {
-              await userData.logout();
+          onPressed: () async {
+            await userData.logout();
+          },
+          icon: Icon(Iconsax.logout),
+        ),
+        Obx(() {
+          return IconButton(
+            onPressed: () {
+              themeData.setThemeData(
+                themeData.isDarkMode() ? ThemeMode.light : ThemeMode.dark,
+              );
             },
-            icon: Icon(Iconsax.logout)),
+            icon: themeData.isDarkMode()
+                ? Icon(Icons.dark_mode_sharp)
+                : Icon(Icons.light_mode_rounded),
+          );
+        }),
         Container(
           margin: const EdgeInsets.only(right: 10),
           child: const CircleAvatar(

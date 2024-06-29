@@ -76,6 +76,15 @@ TextStyle get appBarTitleStyle {
 
 // ======== BODY ======== \\
 
+TextStyle get bodyTitleTextStyle {
+  return GoogleFonts.varelaRound(
+    textStyle: const TextStyle(
+      fontSize: Heading.bodyText,
+      fontWeight: FontWeight.bold,
+    ),
+  );
+}
+
 TextStyle get bodyTextStyle {
   return GoogleFonts.figtree(
     textStyle: const TextStyle(
@@ -89,6 +98,7 @@ TextStyle get navBarTextStyle {
   return GoogleFonts.figtree(
     textStyle: const TextStyle(
       fontSize: 13.5,
+      fontWeight: FontWeight.w500,
     ),
   );
 }

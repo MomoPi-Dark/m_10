@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:menejemen_waktu/src/core/controllers/nav_select_controller.dart';
 import 'package:menejemen_waktu/src/core/controllers/task_controller.dart';
@@ -29,25 +30,35 @@ class _WrapperState extends State<Wrapper> {
   }
 
   Widget _buildLoading() {
-    return Container(
-      color: _themeData.currentTheme.value.primaryColor,
+    return const Center(
+      child: CircularProgressIndicator(
+        color: Colors.blue,
+      ),
     );
+  }
+
+  Widget _blankScreen() {
+    return Obx(() {
+      return Scaffold(
+        backgroundColor: _themeData.currentTheme().primaryColor,
+      );
+    });
   }
 
   Widget _buildUserContent() {
     return FutureBuilder(
       future: _userData.initScreen(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildLoading();
-        }
-
         if (snapshot.hasError) {
           return _buildError();
         }
 
-        _taskData.initScreen();
-        return const AppScreen();
+        return Obx(() {
+          if (!_userData.isReady) return _blankScreen();
+
+          _taskData.initScreen();
+          return const AppScreen();
+        });
       },
     );
   }
@@ -56,16 +67,16 @@ class _WrapperState extends State<Wrapper> {
     return FutureBuilder(
       future: _userData.initCloseScreen(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildLoading();
-        }
-
         if (snapshot.hasError) {
           return _buildError();
         }
 
-        _taskData.initCloseScreen();
-        return const GuestScreen();
+        return Obx(() {
+          if (_userData.isReady) return _blankScreen();
+
+          _taskData.initCloseScreen();
+          return const GuestScreen();
+        });
       },
     );
   }
@@ -87,10 +98,6 @@ class _WrapperState extends State<Wrapper> {
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return _buildError();
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return _buildLoading();
           }
 
           if (snapshot.hasData) {

@@ -20,34 +20,26 @@ class LoadTasks extends StatefulWidget {
 class _LoadTasksState extends State<LoadTasks> {
   final _taskData = Get.find<TaskController>();
 
+  Widget _buildLoading() {
+    return widget.loading ??
+        const Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+          ),
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      // if (_taskData.connectionState() == StateLoadItems.loading) {
-      //   return widget.loading ??
-      //       const Center(
-      //         child: CircularProgressIndicator(
-      //           valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-      //         ),
-      //       );
-      // } else if (_taskData.connectionState() == StateLoadItems.done) {
-      //   return widget.buildDoneChild();
-      // } else {
-      //   return const Center(
-      //     child: Text('Error loading tasks'),
-      //   );
-      // }
-
       switch (_taskData.connectionState()) {
-        case StateLoadItems.loading:
-          return widget.loading ??
-              const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                ),
-              );
+        case StateLoad.waiting:
+          return _buildLoading();
 
-        case StateLoadItems.done:
+        case StateLoad.loading:
+          return _buildLoading();
+
+        case StateLoad.done:
           return widget.buildDoneChild();
 
         default:

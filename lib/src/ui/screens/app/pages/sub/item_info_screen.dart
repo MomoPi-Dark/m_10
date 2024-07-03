@@ -16,11 +16,11 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
   Widget build(BuildContext context) {
     var data = Get.arguments;
     var dataFromJson = TaskItemBuilder.fromJson(data);
-    log("Data: $dataFromJson");
+    // log("Data: $dataFromJson");
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Item Info",
         ),
       ),

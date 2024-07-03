@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
+import 'package:menejemen_waktu/src/core/controllers/task_controller.dart';
+
 // Fungsi untuk mengubah JSON string menjadi objek TaskItemBuilder
 TaskItemBuilder taskItemBuilderFromJson(String str) =>
     TaskItemBuilder.fromJson(json.decode(str));
@@ -12,16 +15,16 @@ class TaskItemBuilder {
   TaskItemBuilder({
     this.id = "",
     this.userId = "",
-    required this.label,
-    required this.title,
-    required this.note,
-    required this.date,
-    required this.startTime,
-    required this.endTime,
-    required this.remind,
-    required this.repeat,
-    required this.color,
-    required this.isTimeExceeded,
+    this.label = 0,
+    this.title = "",
+    this.note = "",
+    this.date = "",
+    this.startTime = "",
+    this.endTime = "",
+    this.remind = 0,
+    this.repeat = "",
+    this.color = 0,
+    this.isTimeExceeded = 0,
     this.createdAt = "",
     this.updatedAt = "",
   });
@@ -46,18 +49,18 @@ class TaskItemBuilder {
   }
 
   int color;
-  String createdAt;
+  String createdAt = DateFormat(dateTaskFormat).format(DateTime.now());
   String date;
   String endTime;
   String id;
   int isTimeExceeded;
-  String label;
+  int label;
   String note;
   int remind;
   String repeat;
   String startTime;
   String title;
-  String updatedAt;
+  String updatedAt = DateFormat(dateTaskFormat).format(DateTime.now());
   String userId;
 
   Map<String, dynamic> toJson() {
@@ -77,5 +80,39 @@ class TaskItemBuilder {
       'createdAt': createdAt,
       'updatedAt': updatedAt,
     };
+  }
+
+  TaskItemBuilder copyWith({
+    String? id,
+    String? userId,
+    int? label,
+    String? title,
+    String? note,
+    String? date,
+    String? startTime,
+    String? endTime,
+    int? remind,
+    String? repeat,
+    int? color,
+    int? isTimeExceeded,
+    String? createdAt,
+    String? updatedAt,
+  }) {
+    return TaskItemBuilder(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      label: label ?? this.label,
+      title: title ?? this.title,
+      note: note ?? this.note,
+      date: date ?? this.date,
+      startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
+      remind: remind ?? this.remind,
+      repeat: repeat ?? this.repeat,
+      color: color ?? this.color,
+      isTimeExceeded: isTimeExceeded ?? this.isTimeExceeded,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
   }
 }

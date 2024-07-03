@@ -3,8 +3,8 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:menejemen_waktu/src/core/controllers/user_controller.dart';
 import 'package:menejemen_waktu/src/core/models/tasks_item_builder.dart';
-import 'package:menejemen_waktu/src/core/services/auth_service.dart';
 import 'package:menejemen_waktu/src/core/services/database_service.dart';
 import 'package:menejemen_waktu/src/utils/contants/contants.dart';
 
@@ -13,18 +13,20 @@ const String dateTaskFormat = "yyyy-MM-dd";
 const int taskLimit = 20;
 
 class TaskController extends GetxController {
-  final AuthService _auth = AuthService();
-  final String _collectionName = 'tasks';
-  final Rx<StateLoadItems> _connectionState = StateLoadItems.loading.obs;
+  final UserController _auth = Get.find<UserController>();
+  final String _collectionName = 'users';
+  final Rx<StateLoad> _connectionState = StateLoad.waiting.obs;
   final DatabaseService _db = DatabaseService();
   DocumentSnapshot? _lastDocument;
   String? _recordId;
   final String _requiredField = 'userId';
+  final String _subcollectionName = 'tasks';
   final RxList<TaskItemBuilder> _taskCache = <TaskItemBuilder>[].obs;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _taskSubscription;
 
   RxList<TaskItemBuilder> get tasks => _taskCache;
 
-  Rx<StateLoadItems> get connectionState => _connectionState;
+  Rx<StateLoad> get connectionState => _connectionState;
 
   List<TaskItemBuilder> getTasks({int? limit}) {
     return _taskCache.take(limit ?? taskLimit).toList();
@@ -48,67 +50,92 @@ class TaskController extends GetxController {
 
   Future<List<TaskItemBuilder>> initScreen() async {
     if (_auth.currentUser == null ||
-        _taskCache.isNotEmpty ||
-        _connectionState.value == StateLoadItems.done) {
+        _connectionState.value == StateLoad.loading ||
+        _connectionState.value == StateLoad.done) {
       return _taskCache;
     }
 
-    await _setStateLoad(StateLoadItems.loading);
+    _setStateLoad(StateLoad.loading);
 
     try {
-      _recordId ??= _auth.currentUser!.uid;
-      await loadTasks(limit: taskLimit);
+      _recordId ??= _auth.currentUser!.id;
+      await loadTasks(loadMore: true);
+      await _subscribeToTasks();
     } catch (e) {
-      log('Error initializing task screen: $e');
+      // log('Error initializing task screen: $e');
     }
 
-    await _setStateLoad(StateLoadItems.done);
+    _setStateLoad(
+      StateLoad.done,
+    );
+
+    // log('Task screen initialized');
 
     return _taskCache;
   }
 
   Future<void> initCloseScreen() async {
     if (_auth.currentUser != null ||
-        _connectionState.value == StateLoadItems.none) {
+        _connectionState.value == StateLoad.loading ||
+        _connectionState.value == StateLoad.none) {
       return;
     }
 
-    await _setStateLoad(
-      StateLoadItems.loading,
+    _setStateLoad(
+      StateLoad.loading,
     );
 
     if (_taskCache.isNotEmpty) {
+      await _setDelay(milliseconds: 1);
       _taskCache.clear();
     }
 
     _lastDocument = null;
     _recordId = null;
 
-    await _setStateLoad(
-      StateLoadItems.none,
+    if (_taskSubscription != null) {
+      await _taskSubscription?.cancel();
+      _taskSubscription = null;
+    }
+
+    _setStateLoad(
+      StateLoad.none,
     );
 
-    log('Task screen closed');
+    if (_auth.currentUser == null) {
+      _connectionState.value = StateLoad.waiting;
+    }
+
+    // log('Task screen closed');
   }
 
   Future<void> loadTasks({bool loadMore = false, int? limit}) async {
-    if (!await _db.hasCollection(_collectionName) ||
-        _auth.currentUser == null ||
-        _recordId == null ||
-        _taskCache.isNotEmpty) {
+    if (_auth.currentUser == null || _recordId == null) {
+      return;
+    }
+
+    if (!await _db.hasSubDocument(
+      _collectionName,
+      _recordId!,
+      _subcollectionName,
+    )) {
       return;
     }
 
     try {
-      var querySnapshot = await _db.find(
-        _collectionName,
-        field: _requiredField,
-        isEqualTo: _auth.currentUser!.uid,
-        limit: limit,
-        startAfter: loadMore && _lastDocument != null ? _lastDocument : null,
-      );
+      var querySnapshot = await _db
+          .findSubcollection(
+            _collectionName,
+            _recordId!,
+            _subcollectionName,
+            limit: limit ?? taskLimit,
+            lastDocument: loadMore ? _lastDocument : null,
+          )
+          .then(
+            (value) => value.get(),
+          );
 
-      if (querySnapshot != null && querySnapshot.docs.isNotEmpty) {
+      if (querySnapshot.docs.isNotEmpty) {
         _lastDocument = querySnapshot.docs.last;
 
         List<TaskItemBuilder> loadedTasks = querySnapshot.docs
@@ -120,9 +147,9 @@ class TaskController extends GetxController {
         } else {
           _taskCache.assignAll(loadedTasks);
         }
-      }
 
-      log('Tasks successfully loaded: ${_taskCache.length} tasks');
+        // log('Task data loaded: ${loadedTasks.length} tasks');
+      }
     } catch (e) {
       throw Exception(e);
     }
@@ -134,35 +161,47 @@ class TaskController extends GetxController {
     }
 
     try {
-      DocumentReference docRef =
-          await _db.addData(_collectionName, task.toJson());
+      var docRef = await _db.addDataToSubcollection(
+        _collectionName,
+        _recordId!,
+        _subcollectionName,
+        task.toJson(),
+      );
 
-      task.userId = _auth.currentUser!.uid;
       task.id = docRef.id;
+      task.userId = _recordId!;
+
       task.createdAt = DateTime.now().toString();
       task.updatedAt = DateTime.now().toString();
 
-      _taskCache.add(task);
-
       await docRef.update(task.toJson());
 
-      log('Task successfully added: ${task.id}');
+      // log('Task successfully added: ${task.id}');
     } catch (e) {
-      log('Error adding task: $e');
+      // log('Error adding task: $e');
       throw Exception(e);
     }
   }
 
   Future<void> updateTask(TaskItemBuilder task) async {
-    if (!await _db.hasCollection(_collectionName) || _recordId == null) {
+    if (_recordId == null ||
+        !await _db.hasSubDocument(
+            _collectionName, _recordId!, _subcollectionName)) {
       return;
     }
 
     try {
+      var tk = _getTaskCache(task.id);
+
+      task.id = tk.id;
+      task.userId = tk.userId;
+      task.createdAt = tk.createdAt;
       task.updatedAt = DateTime.now().toString();
 
-      await _db.findOneAndUpdate(
+      await _db.findOneAndUpdateSubcollection(
         _collectionName,
+        _recordId!,
+        _subcollectionName,
         field: "id",
         isEqualTo: task.id,
         data: task.toJson(),
@@ -172,58 +211,81 @@ class TaskController extends GetxController {
 
       if (index != -1) {
         _taskCache[index] = task;
-        log('Task successfully updated: ${task.id}');
+        // log('Task successfully updated: ${task.toJson()}');
       } else {
-        log('Task not found: ${task.id}');
+        // log('Task not found in cache: ${task.id}');
       }
     } catch (e) {
-      log('Error updating task: $e');
-      throw Exception(e);
+      // log('Error updating task: $e');
+      throw Exception('Error updating task: $e');
     }
   }
 
   Future<void> deleteTask(TaskItemBuilder task) async {
-    if (!await _db.hasCollection(_collectionName) || _recordId == null) {
+    if (!await _db.hasSubDocument(
+          _collectionName,
+          _recordId!,
+          _subcollectionName,
+        ) ||
+        _recordId == null) {
       return;
     }
 
     try {
-      await _db.findOneAndDelete(
+      await _db.findOneAndDeleteSubcollection(
         _collectionName,
+        _recordId!,
+        _subcollectionName,
         field: 'id',
         isEqualTo: task.id,
       );
 
-      _taskCache.removeWhere((t) => t.id == task.id);
-
-      log('Task successfully deleted: ${task.id}');
+      // log('Task successfully deleted: ${task.id}');
     } catch (e) {
-      log("Error deleting task: $e");
+      // log("Error deleting task: $e");
       throw Exception(e);
     }
   }
 
-  Future<TaskItemBuilder?> _getTask(String id) async {
-    try {
-      if (_auth.currentUser == null) return null;
-
-      final data = await _db.findOne(
-        _collectionName,
-        field: _requiredField,
-        isEqualTo: id,
-      );
-
-      if (data == null) return null;
-
-      return TaskItemBuilder.fromJson(data.data());
-    } catch (e) {
-      log('Error getting task: $e');
-      throw Exception(e);
-    }
+  TaskItemBuilder _getTaskCache(String id) {
+    return _taskCache.firstWhere((t) => t.id == id);
   }
 
-  Future<void> _setStateLoad(StateLoadItems value, {int delay = 1}) async {
-    await Future.delayed(Duration(milliseconds: delay));
+  Future<void> _setStateLoad(StateLoad value, {int delay = 1}) async {
+    await _setDelay(milliseconds: delay);
     _connectionState.value = value;
+  }
+
+  Future<void> _setDelay({required int milliseconds}) {
+    return Future.delayed(Duration(milliseconds: milliseconds));
+  }
+
+  Future<void> _subscribeToTasks() async {
+    if (_taskSubscription != null) await _taskSubscription?.cancel();
+
+    _taskSubscription = _db
+        .getSubCollectionsStream(
+      _collectionName,
+      _recordId!,
+      _subcollectionName,
+    )
+        .listen(
+      (querySnapshot) async {
+        List<TaskItemBuilder> loadedTasks = querySnapshot.docs
+            .map((e) => TaskItemBuilder.fromJson(e.data()))
+            .toList();
+
+        await _setDelay(milliseconds: 1);
+        _taskCache.value = loadedTasks;
+
+        // log("Task data updated: ${_taskCache.length} tasks");
+      },
+      onError: (e) {
+        throw Exception('Error subscribing to task data: $e');
+      },
+      onDone: () {
+        // log('Task data subscription done');
+      },
+    );
   }
 }

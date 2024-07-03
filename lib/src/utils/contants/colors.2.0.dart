@@ -27,6 +27,16 @@ Color get defaultTextPrimaryLayoutColor => createThemeColorSchema(
       lightColor: DarkColor.primary(),
     );
 
+Color get defaultTextSecondaryLayoutColor => createThemeColorSchema(
+      darkColor: LightColor.secondary(),
+      lightColor: DarkColor.secondary(),
+    );
+
+Color get defaultContainerSecondaryLayoutColor => createThemeColorSchema(
+      darkColor: DarkColor.secondary(),
+      lightColor: LightColor.secondary(),
+    );
+
 // LOGIN \\
 Color get fieldCostumColor => createThemeColorSchema(
       darkColor: primaryGrey,
@@ -34,6 +44,6 @@ Color get fieldCostumColor => createThemeColorSchema(
     );
 
 Color get fieldTextCustomColor => createThemeColorSchema(
-      darkColor: Color(0xFF8CAAB9),
+      darkColor: const Color(0xFF8CAAB9),
       lightColor: DarkColor.primary(),
     );

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:menejemen_waktu/src/ui/custom/create_bar.dart';
 import 'package:menejemen_waktu/src/ui/screens/app/pages/calendar_screen.dart';
 import 'package:menejemen_waktu/src/ui/screens/app/pages/home/home_screen.dart';
+import 'package:menejemen_waktu/src/ui/screens/app/pages/more_screen.dart';
 
 class NavSelectController extends GetxController {
   final RxInt _selectedIndex = (0).obs;
@@ -11,11 +12,11 @@ class NavSelectController extends GetxController {
   int get selectedIndex => _selectedIndex.value;
 
   Future<void> init() async {
-    _selectedIndex.value = 0;
+    await Future.delayed(const Duration(milliseconds: 500));
+    changeDestination(0);
   }
 
-  void changeDestination(int index) async {
-    await Future.delayed(const Duration(milliseconds: 1));
+  void changeDestination(int index) {
     _selectedIndex.value = index;
   }
 
@@ -25,6 +26,8 @@ class NavSelectController extends GetxController {
         return const HomeScreen();
       case 1:
         return const CalendarScreen();
+      case 2:
+        return const MoreScreen();
       default:
         return const Scaffold(
           body: SafeArea(

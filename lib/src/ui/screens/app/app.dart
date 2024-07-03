@@ -1,7 +1,5 @@
-import 'dart:developer';
-
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:menejemen_waktu/routes.dart';
@@ -10,6 +8,7 @@ import 'package:menejemen_waktu/src/core/controllers/task_controller.dart';
 import 'package:menejemen_waktu/src/core/controllers/theme_controller.dart';
 import 'package:menejemen_waktu/src/core/controllers/user_controller.dart';
 import 'package:menejemen_waktu/src/core/services/auth_service.dart';
+import 'package:menejemen_waktu/src/utils/contants/colors.2.0.dart';
 import 'package:menejemen_waktu/src/utils/contants/colors.dart';
 import 'package:menejemen_waktu/src/utils/contants/contants.dart';
 
@@ -41,6 +40,7 @@ class _AppScreenState extends State<AppScreen> with WidgetsBindingObserver {
     return Obx(() {
       return NavigationBarTheme(
         data: NavigationBarThemeData(
+          backgroundColor: themeData.currentTheme().colorScheme.secondary,
           indicatorColor: customBottomNavbarIndicatorLayoutColor,
           labelTextStyle: WidgetStateProperty.resolveWith<TextStyle?>(
             (Set<WidgetState> states) {
@@ -49,7 +49,6 @@ class _AppScreenState extends State<AppScreen> with WidgetsBindingObserver {
                   color: customBottomNavbarIconSelectedLayoutColor,
                 );
               }
-
               return navBarTextStyle;
             },
           ),
@@ -68,7 +67,7 @@ class _AppScreenState extends State<AppScreen> with WidgetsBindingObserver {
           ),
         ),
         child: Container(
-          color: themeData.currentTheme().colorScheme.secondary,
+          color: themeData.currentTheme().colorScheme.primary,
           child: NavigationBar(
             destinations: navData.destinations,
             onDestinationSelected: (i) {
@@ -84,26 +83,47 @@ class _AppScreenState extends State<AppScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        bottomNavigationBar: _buildBottomNavigationBar(),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Get.toNamed('/addtask');
-          },
-          child: Icon(
-            FontAwesomeIcons.plus,
-            color: customPrimaryTextColor,
-            size: 20,
+    return Obx(() {
+      return SafeArea(
+        child: Scaffold(
+          backgroundColor: themeData.currentTheme().colorScheme.primary,
+          bottomNavigationBar: _buildBottomNavigationBar(),
+          floatingActionButton: Obx(() {
+            return FloatingActionButton(
+              backgroundColor: defaultContainerSecondaryLayoutColor,
+              onPressed: () {
+                Get.toNamed(
+                  '/addtask',
+                );
+              },
+              child: Icon(
+                FontAwesomeIcons.plus,
+                color: customPrimaryTextColor,
+                size: 20,
+              ),
+            );
+          }),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.miniEndFloat,
+          floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
+          body: PageTransitionSwitcher(
+            transitionBuilder: (child, primaryAnimation, secondaryAnimation) {
+              return SharedAxisTransition(
+                animation: primaryAnimation,
+                secondaryAnimation: secondaryAnimation,
+                transitionType: SharedAxisTransitionType.vertical,
+                child: child,
+              );
+            },
+            duration: const Duration(seconds: 1),
+            child: Container(
+              key: ValueKey(navData.selectedIndex),
+              color: themeData.currentTheme().colorScheme.secondary,
+              child: navData.getScreen(),
+            ),
           ),
         ),
-        body: Obx(() {
-          return Container(
-            color: themeData.currentTheme().colorScheme.secondary,
-            child: navData.getScreen(),
-          );
-        }),
-      ),
-    );
+      );
+    });
   }
 }

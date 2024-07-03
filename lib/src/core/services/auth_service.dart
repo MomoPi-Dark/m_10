@@ -13,21 +13,15 @@ class AuthService {
       _auth.currentUser?.email?.split("@").first ??
       "Unknown User";
 
-  Future<void> signOut({
-    String? redirect,
-  }) async {
+  Future<void> signOut() async {
     if (_auth.currentUser == null) {
       throw "User not login yet!";
     }
 
     try {
       await _auth.signOut();
-
-      if (redirect != null) {
-        Get.offAllNamed(redirect);
-      }
     } catch (e) {
-      log("Something went wrong with signout: error $e");
+      // log("Something went wrong with signout: error $e");
       throw Exception(e);
     }
   }
@@ -64,7 +58,7 @@ class AuthService {
   ) async {
     try {
       if (_auth.currentUser != null) {
-        log("User already login: ${_auth.currentUser!.email}");
+        // log("User already login: ${_auth.currentUser!.email}");
         return _auth.currentUser;
       }
 
@@ -74,7 +68,7 @@ class AuthService {
       );
 
       if (cred.user != null) {
-        log("User logged in: ${cred.user!.email}");
+        // log("User logged in: ${cred.user!.email}");
       }
 
       return cred.user;
@@ -92,7 +86,7 @@ class AuthService {
   }
 
   String getErrorMessage(String errorCode) {
-    log("Error code: $errorCode");
+    // log("Error code: $errorCode");
 
     switch (errorCode) {
       case "invalid-email":

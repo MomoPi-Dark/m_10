@@ -30,7 +30,7 @@ class TaskItemService {
       return TaskItemBuilder.fromJson(data.data());
     } catch (e) {
       // Handle exceptions here, e.g., log the error
-      log('Error in getTaskItem: $e');
+      // log('Error in getTaskItem: $e');
       throw Exception(e); // Return null or throw the error as needed
     }
   }
@@ -41,22 +41,17 @@ class TaskItemService {
         return [];
       }
 
-      final data = await _db.find(
-        _collectionName,
-        field: _requiredField,
-        isEqualTo: _auth.currentUser!.uid,
-      );
+      final data = await _db
+          .find(
+            _collectionName,
+            limit: 100,
+          )
+          .then((value) => value.get());
 
-      if (data == null) {
-        return [];
-      }
-
-      return data.docs
-          .map((e) => TaskItemBuilder.fromJson(e.data()))
-          .toList(growable: false);
+      return data.docs.map((e) => TaskItemBuilder.fromJson(e.data())).toList();
     } catch (e) {
       // Handle exceptions here, e.g., log the error
-      log('Error in getTaskItems: $e');
+      // log('Error in getTaskItems: $e');
       throw Exception(e); // Return an empty list or throw the error as needed
     }
   }
@@ -81,7 +76,7 @@ class TaskItemService {
       return TaskItemBuilder.fromJson(data.data());
     } catch (e) {
       // Handle exceptions here, e.g., log the error
-      log('Error in updateTaskItem: $e');
+      // log('Error in updateTaskItem: $e');
       throw Exception(e); // Return null or throw the error as needed
     }
   }
@@ -100,9 +95,8 @@ class TaskItemService {
 
       return task;
     } catch (e) {
-      // Handle exceptions here, e.g., log the error
-      log('Error in createTaskItem: $e');
-      throw Exception(e); // Rethrow the error to propagate it further if needed
+      // log('Error in createTaskItem: $e');
+      throw Exception(e);
     }
   }
 
@@ -119,7 +113,7 @@ class TaskItemService {
       );
     } catch (e) {
       // Handle exceptions here, e.g., log the error
-      log('Error in deleteTaskItem: $e');
+      // log('Error in deleteTaskItem: $e');
       throw Exception(e); // Rethrow the error to propagate it further if needed
     }
   }

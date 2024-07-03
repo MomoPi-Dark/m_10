@@ -1,6 +1,7 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:menejemen_waktu/src/core/controllers/nav_select_controller.dart';
 import 'package:menejemen_waktu/src/core/controllers/task_controller.dart';
@@ -47,7 +48,7 @@ class _WrapperState extends State<Wrapper> {
 
   Widget _buildUserContent() {
     return FutureBuilder(
-      future: _userData.initScreen(),
+      future: _userData.initUser(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return _buildError();
@@ -65,7 +66,7 @@ class _WrapperState extends State<Wrapper> {
 
   Widget _buildGuestContent() {
     return FutureBuilder(
-      future: _userData.initCloseScreen(),
+      future: _userData.initCloseUser(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return _buildError();
@@ -92,12 +93,13 @@ class _WrapperState extends State<Wrapper> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       extendBody: true,
+      backgroundColor: _themeData.currentTheme().colorScheme.primary,
       body: StreamBuilder<User?>(
         initialData: AuthService().currentUser,
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return _buildError();
+            // log('Error: ${snapshot.error}');
           }
 
           if (snapshot.hasData) {

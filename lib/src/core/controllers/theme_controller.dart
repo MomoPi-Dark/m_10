@@ -13,9 +13,9 @@ class ThemeController extends GetxController {
   final _themeMode = ThemeMode.system.obs;
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
-    init();
+    await init();
   }
 
   Future<void> init() async {
@@ -34,6 +34,7 @@ class ThemeController extends GetxController {
         scaffoldBackgroundColor: DarkColor.primary(),
         primaryColor: DarkColor.primary(),
         colorScheme: ColorScheme.dark(
+          brightness: Brightness.light,
           primary: DarkColor.primary(),
           secondary: DarkColor.secondary(),
         ),
@@ -49,6 +50,7 @@ class ThemeController extends GetxController {
         scaffoldBackgroundColor: LightColor.primary(),
         primaryColor: LightColor.primary(),
         colorScheme: ColorScheme.light(
+          brightness: Brightness.dark,
           primary: LightColor.primary(),
           secondary: LightColor.secondary(),
         ),
@@ -95,14 +97,15 @@ class ThemeController extends GetxController {
 
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-        statusBarColor: theme.appBarTheme.backgroundColor,
-        statusBarIconBrightness:
-            isDarkMode() ? Brightness.light : Brightness.dark,
-        statusBarBrightness: theme.brightness,
-        systemNavigationBarColor:
-            theme.bottomNavigationBarTheme.backgroundColor,
         systemNavigationBarIconBrightness:
-            isDarkMode() ? Brightness.light : Brightness.dark,
+            isDarkMode.value ? Brightness.light : Brightness.dark,
+        systemNavigationBarColor: theme.colorScheme.secondary,
+        statusBarColor: theme.colorScheme.primary,
+        statusBarIconBrightness:
+            isDarkMode.value ? Brightness.light : Brightness.dark,
+        statusBarBrightness:
+            isDarkMode.value ? Brightness.light : Brightness.dark,
+        systemNavigationBarDividerColor: theme.colorScheme.secondary,
       ),
     );
   }

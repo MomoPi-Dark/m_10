@@ -32,59 +32,24 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   void initState() {
-    _changeResultDate();
     super.initState();
-  }
 
-  int getDaysInMonth(int year, int month) {
-    if (month == 12) {
-      year++;
-      month = 1;
-    } else {
-      month++;
-    }
+    _changeResultDate();
 
-    DateTime firstDayNextMonth = DateTime(year, month, 1);
-    DateTime lastDayCurrentMonth =
-        firstDayNextMonth.subtract(const Duration(days: 1));
-
-    return lastDayCurrentMonth.day;
-  }
-
-  Widget showTaskList() {
-    if (taskData.tasks.isEmpty) {
-      return Center(
-        child: Text(
-          "No Task",
-          style: bodyTextStyle.copyWith(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      );
-    }
-
-    return Expanded(
-      child: ListView.builder(
-        itemCount: taskData.tasks.length,
-        itemBuilder: (context, index) {
-          final task = taskData.tasks[index];
-
-          return ListTile(
-            title: Text(task.title),
-            subtitle: Text(task.date),
-          );
-        },
-      ),
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.delayed(const Duration(milliseconds: 100));
+      _dateController.jumpToSelection();
+    });
   }
 
   Widget _buildDateTitle() {
     return Container(
-      padding: defaultPaddingHorizontal.add(const EdgeInsets.only(
-        top: 10,
-        bottom: 10,
-      )),
+      padding: defaultPaddingHorizontal.add(
+        const EdgeInsets.only(
+          top: 10,
+          bottom: 10,
+        ),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -101,9 +66,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
               style: bodyTextStyle,
             ),
             selectedItemBuilder: (context) {
-              return const [
-                Text("All"),
-                Text("Completed"),
+              return [
+                const Text("All"),
+                const Text("Completed"),
               ];
             },
             icon: Icon(
@@ -127,8 +92,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  Widget _showTaskFilter() {
-    final tasks = _processTasks(_filterByDate().toList());
+  Widget _showTaskFilter(List<TaskItemBuilder> value) {
+    final tasks = _processTasks(value);
 
     if (tasks.isEmpty) {
       return Center(
@@ -173,7 +138,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Widget _buildTimeLine(Color color) {
     return SizedBox(
       width: 20,
-      height: MediaQuery.of(context).size.height / 8,
+      height: MediaQuery.of(context).size.height / 6.5,
       child: TimelineTile(
         alignment: TimelineAlign.center,
         indicatorStyle: IndicatorStyle(
@@ -202,23 +167,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
       color: color,
       elevation: 5,
       borderRadius: BorderRadius.circular(5),
-      child: Icon(
-        Icons.timelapse,
-        size: 15,
+      child: Container(
+        width: 20,
+        height: 20,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: const Center(
+          child: Icon(
+            Icons.timelapse,
+            size: 15,
+          ),
+        ),
       ),
-      // child: Container(
-      //   width: 20,
-      //   height: 20,
-      //   decoration: BoxDecoration(
-      //     borderRadius: BorderRadius.circular(5),
-      //   ),
-      //   child: const Center(
-      //     child: Icon(
-      //       Icons.check,
-      //       size: 15,
-      //     ),
-      //   ),
-      // ),
     );
   }
 
@@ -242,14 +203,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
             fontWeight: FontWeight.w600,
           ),
         ),
+        selectedTextColor: createThemeColorSchema(
+          lightColor: customPrimaryTextColor,
+          darkColor: customPrimaryTextColor,
+        ),
         dayTextStyle: GoogleFonts.lato(
-          textStyle: TextStyle(
+          textStyle: const TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
           ),
         ),
         monthTextStyle: GoogleFonts.lato(
-          textStyle: TextStyle(
+          textStyle: const TextStyle(
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -294,7 +259,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
     Map<String, List<TaskItemBuilder>> groupedTasks = {};
 
     for (var task in tasks) {
-      final startTime = DateFormat(dateTimeTaskFormat).parse(task.startTime);
+      final startTime =
+          DateFormat(dateTimeTaskFormat).parse(task.startTime, true);
+
       String hour = DateFormat.H().format(startTime);
 
       groupedTasks.putIfAbsent(hour, () => []);
@@ -303,8 +270,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
     groupedTasks.forEach((hour, tasks) {
       tasks.sort((a, b) {
-        final startTimeA = DateFormat(dateTimeTaskFormat).parse(a.startTime);
-        final startTimeB = DateFormat(dateTimeTaskFormat).parse(b.startTime);
+        final startTimeA =
+            DateFormat(dateTimeTaskFormat).parse(a.startTime, true);
+        final startTimeB =
+            DateFormat(dateTimeTaskFormat).parse(b.startTime, true);
+
         return startTimeA.compareTo(startTimeB);
       });
     });
@@ -333,6 +303,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       () {
         return LayoutScreen(
           title: Text("Calendar", style: appBarTitleStyle),
+          toolbarHeight: 70.0,
           actions: [
             Container(
               margin: const EdgeInsets.only(right: 10),
@@ -362,20 +333,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ),
             ),
           ],
-          bodyChild: Column(
-            children: [
-              Transform.scale(
-                scale: 0.98,
-                child: _buildDatePicker(),
-              ),
-              const SizedBox(height: 10),
-              _buildDateTitle(),
-              const SizedBox(height: 10),
-              Expanded(
-                child: _showTaskFilter(),
-              ),
-            ],
-          ),
+          bodyChild: Obx(() {
+            return Column(
+              children: [
+                Transform.scale(
+                  scale: 0.98,
+                  child: _buildDatePicker(),
+                ),
+                const SizedBox(height: 10),
+                _buildDateTitle(),
+                const SizedBox(height: 10),
+                Expanded(
+                  child: _showTaskFilter(_filterByDate().toList()),
+                ),
+              ],
+            );
+          }),
         );
       },
     );

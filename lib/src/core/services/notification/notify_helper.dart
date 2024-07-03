@@ -15,28 +15,46 @@ class NotificationHelper with AwesomeNotifications {
   static Future<void> onNotificationCreatedMethod(
     ReceivedNotification receivedNotification,
   ) async {
-    print('Notification created');
+    // log('Notification created, n: $receivedNotification');
   }
 
   @pragma("vm:entry-point")
   static Future<void> onNotificationDisplayedMethod(
     ReceivedNotification receivedNotification,
   ) async {
-    print('Notification displayed');
+    // log('Notification displayed, n: $receivedNotification');
   }
 
   @pragma("vm:entry-point")
   static Future<void> onDismissActionReceivedMethod(
     ReceivedAction receivedAction,
   ) async {
-    print('Notification dismissed');
+    // log('Notification dismissed, n: $receivedAction');
   }
 
   @pragma("vm:entry-point")
   static Future<void> onActionReceivedMethod(
     ReceivedAction receivedAction,
   ) async {
-    print('Notification action received');
+    // log('Notification action received, n: $receivedAction');
+  }
+
+  static Future checkNotificationPermission(String key) async {
+    final bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
+
+    if (isAllowed) {
+      return;
+    }
+
+    await AwesomeNotifications().requestPermissionToSendNotifications(
+      channelKey: key,
+      permissions: [
+        NotificationPermission.Alert,
+        NotificationPermission.Badge,
+        NotificationPermission.Sound,
+        NotificationPermission.Vibration,
+      ],
+    );
   }
 
   static Future<void> configureLocalTimeZone() async {
@@ -45,64 +63,78 @@ class NotificationHelper with AwesomeNotifications {
     tz.setLocalLocation(tz.getLocation(timeZone));
   }
 
-  static Future checkNotificationPermission(String key) async {
-    // final bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
-
-    // log('Notification permission: $isAllowed');
-
-    await AwesomeNotifications().requestPermissionToSendNotifications(
-      channelKey: key,
-      permissions: [
-        NotificationPermission.Alert,
-        NotificationPermission.Badge,
-        NotificationPermission.Sound,
-      ],
-    );
-  }
-
   static Future<void> createScheduledNotification(
     TaskItemBuilder taskBuilder,
   ) async {
+    await checkNotificationPermission(channelScheduleKey);
     await configureLocalTimeZone();
 
     final location = tz.local;
+    final now = tz.TZDateTime.now(location).add(const Duration(minutes: 1));
 
     final DateFormat dateFormat = DateFormat(dateTaskFormat);
-    final DateTime scheduleDate = dateFormat.parse(taskBuilder.date);
-
     final DateFormat timeFormat = DateFormat(dateTimeTaskFormat);
-    final DateTime scheduleTimeWithTime = timeFormat.parse(taskBuilder.endTime);
 
-    final scheduleTime = tz.TZDateTime(
+    final DateTime scheduleDate = dateFormat.parse(taskBuilder.date);
+    final DateTime scheduleStartTime = timeFormat.parse(taskBuilder.startTime);
+    final DateTime scheduleEndTime = timeFormat.parse(taskBuilder.endTime);
+
+    final scheduleTzStartTime = tz.TZDateTime(
       location,
       scheduleDate.year,
       scheduleDate.month,
       scheduleDate.day,
-      scheduleTimeWithTime.hour,
-      scheduleTimeWithTime.minute,
+      scheduleStartTime.hour,
+      scheduleStartTime.minute,
     );
 
-    // final payload = {
-    //   'id': taskBuilder.id,
-    //   'data': taskBuilder.toString(),
-    // };
+    // final scheduleTzEndTime = tz.TZDateTime(
+    //   location,
+    //   scheduleDate.year,
+    //   scheduleDate.month,
+    //   scheduleDate.day,
+    //   scheduleEndTime.hour,
+    //   scheduleEndTime.minute,
+    // );
 
-    await AwesomeNotifications().createNotification(
-      content: NotificationContent(
-        id: scheduleId,
-        channelKey: channelGlobalKey,
-        title: taskBuilder.label,
-        body: taskBuilder.note,
-        actionType: ActionType.SilentBackgroundAction,
-        // payload: payload as Map<String, String>,
-      ),
-      schedule: NotificationCalendar.fromDate(
-        date: scheduleTime,
+    // if (scheduleTzStartTime.isBefore(now)) {
+    //   // log('Error: Scheduled time is in the past');
+    //   return;
+    // }
+
+    final payload = {
+      'id': taskBuilder.id,
+      'userId': taskBuilder.userId,
+    };
+
+    int uniqueId = DateTime.now().millisecondsSinceEpoch.remainder(100000);
+
+    try {
+      // Add notification to the schedule \\
+
+      final notification = NotificationContent(
+        id: uniqueId,
+        channelKey: channelScheduleKey,
+        title: "Task Reminder",
+        body: "Task ${taskBuilder.title} is scheduled to start now!",
+        payload: payload,
+      );
+
+      final schedule = NotificationCalendar.fromDate(
+        date: scheduleTzStartTime,
         allowWhileIdle: true,
+        repeats: true,
         preciseAlarm: true,
-      ),
-    );
+      );
 
-    print('Scheduled notification created');
+      await AwesomeNotifications().createNotification(
+        content: notification,
+        schedule: schedule,
+      );
+
+      // log('Scheduled notification created with ID: $uniqueId');
+    } catch (e) {
+      // log('Error creating notification: $e');
+    }
   }
 }

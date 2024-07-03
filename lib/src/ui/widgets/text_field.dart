@@ -6,8 +6,10 @@ class CustomTextField extends StatefulWidget {
   const CustomTextField({
     super.key,
     required this.hint,
-    required this.onChanged,
+    this.onChanged,
+    this.validator,
     this.label,
+    this.errorText,
     this.prefixIcon,
     this.suffixIcon,
     this.controller,
@@ -18,9 +20,11 @@ class CustomTextField extends StatefulWidget {
   final String hint;
   final bool isPassword;
   final String? label;
-  final Function(String) onChanged;
+  final Function(String)? onChanged;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
+  final String? errorText;
+  final String? Function(String?)? validator;
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -29,10 +33,10 @@ class CustomTextField extends StatefulWidget {
 class _CustomTextFieldState extends State<CustomTextField> {
   TextStyle get defaultTextStyle => GoogleFonts.nunito();
 
-  OutlineInputBorder _buildBorder() {
+  OutlineInputBorder _buildBorder({Color? color}) {
     return OutlineInputBorder(
-      borderSide: const BorderSide(
-        color: primaryGrey,
+      borderSide: BorderSide(
+        color: color ?? primaryGrey,
       ),
       borderRadius: BorderRadius.circular(8.0),
     );
@@ -52,7 +56,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             ),
           ),
         const SizedBox(height: 10),
-        TextField(
+        TextFormField(
           onChanged: widget.onChanged,
           style: defaultTextStyle.copyWith(
             color: defaultTextPrimaryLayoutColor,
@@ -60,6 +64,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           obscureText: widget.isPassword,
           controller: widget.controller,
           cursorColor: defaultTextPrimaryLayoutColor,
+          validator: widget.validator,
           decoration: InputDecoration(
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
@@ -72,6 +77,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
             border: _buildBorder(),
             enabledBorder: _buildBorder(),
             focusedBorder: _buildBorder(),
+            errorText: widget.errorText,
+            errorBorder: _buildBorder(color: Colors.red),
+            focusedErrorBorder: _buildBorder(color: Colors.red),
             prefixIcon: widget.prefixIcon,
             suffixIcon: widget.suffixIcon,
           ),

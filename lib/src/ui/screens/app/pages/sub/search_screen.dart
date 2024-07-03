@@ -31,7 +31,7 @@ class _SearchScreenState extends State<SearchScreen> {
     List<TaskItemBuilder> tasks = taskData.tasks
         .where((task) =>
             task.title.toLowerCase().contains(searchText) ||
-            task.label.toLowerCase().contains(searchText))
+            labelItem[task.label].toLowerCase().contains(searchText))
         .toList();
     await Future.delayed(const Duration(seconds: 2));
     return tasks;
@@ -84,7 +84,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
                 return ListTile(
                   title: Text(task.title),
-                  subtitle: Text(task.label),
+                  subtitle: Text(labelItem[task.label]),
                 );
               },
             );

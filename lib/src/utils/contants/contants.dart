@@ -5,10 +5,28 @@ import 'package:menejemen_waktu/src/utils/contants/colors.dart';
 const double defaultPadding = 16.0;
 const int defaultDelayLoading = 1;
 
-enum StateLoadItems {
+const labelItem = ["Work", "Personal", "Study", "Other"];
+
+enum StateLoad {
   none,
+  waiting,
   loading,
   done,
+}
+
+int getDaysInMonth(int year, int month) {
+  if (month == 12) {
+    year++;
+    month = 1;
+  } else {
+    month++;
+  }
+
+  DateTime firstDayNextMonth = DateTime(year, month, 1);
+  DateTime lastDayCurrentMonth =
+      firstDayNextMonth.subtract(const Duration(days: 1));
+
+  return lastDayCurrentMonth.day;
 }
 
 const EdgeInsetsGeometry defaultPaddingHorizontal = EdgeInsets.symmetric(

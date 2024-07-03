@@ -9,8 +9,8 @@ String userBuilderToJson(UserBuilder data) => json.encode(data.toJson());
 
 class UserBuilder {
   UserBuilder({
-    required this.email,
-    required this.displayName,
+    this.email = "unknown@gmail.com",
+    this.displayName = "Unknown",
     this.id = "",
     this.userId = "",
     this.isEmailVerified = false,

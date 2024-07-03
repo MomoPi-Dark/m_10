@@ -11,55 +11,62 @@ import 'package:menejemen_waktu/src/utils/contants/contants.dart';
 class UserController extends GetxController {
   final AuthService _auth = AuthService();
   final AuthService _authData = AuthService();
+  final Rx<StateLoad> _connectionState = StateLoad.waiting.obs;
   final DatabaseService _db = DatabaseService();
-
+  final String _requiredField = 'userId';
+  final String _tableName = 'users';
   final Rx<UserBuilder?> _user = Rx<UserBuilder?>(null);
-
   StreamSubscription<DocumentSnapshot>? _userSubscription;
 
   bool get isReady => _user.value != null;
 
-  final String _requiredField = 'userId';
-  final String _tableName = 'users';
-
-  @override
-  void onClose() {
-    _userSubscription?.cancel();
-    super.onClose();
-  }
-
   UserBuilder? get currentUser => _user.value;
 
-  Future<UserBuilder?> initScreen() async {
-    if (_authData.currentUser == null || _user.value != null) {
+  Future<UserBuilder?> initUser() async {
+    if (_authData.currentUser == null ||
+        _connectionState.value == StateLoad.loading ||
+        _user.value != null) {
       return null;
     }
+
+    _setStateLoad(StateLoad.loading);
 
     var user = await getUser(_authData.currentUser!.uid);
 
     if (user == null) {
-      log('User data tidak ditemukan pada saat inisialisasi layar');
+      // log('User data tidak ditemukan pada saat inisialisasi layar');
       return null;
     }
 
     _user.value = user;
-
     _subscribeToUser(user.id);
 
-    log('User screen initialized ${_user.value?.displayName}');
+    _setStateLoad(StateLoad.done, delay: 500);
+
+    // log('User screen initialized ${_user.value?.displayName}');
 
     return user;
   }
 
-  Future<void> initCloseScreen() async {
-    if (_authData.currentUser != null || _user.value == null) {
+  Future<void> initCloseUser() async {
+    if (_authData.currentUser != null ||
+        _connectionState.value == StateLoad.loading ||
+        _user.value == null) {
       return;
     }
 
-    _user.value = null;
-    await _userSubscription?.cancel();
+    _setStateLoad(StateLoad.loading);
 
-    log('User screen closed');
+    _user.value = null;
+
+    if (_userSubscription != null) {
+      await _userSubscription?.cancel();
+      _userSubscription = null;
+    }
+
+    _setStateLoad(StateLoad.waiting, delay: 500);
+
+    // log('User screen closed');
   }
 
   Future<UserBuilder?> updateUser(UserBuilder user) async {
@@ -82,7 +89,7 @@ class UserController extends GetxController {
     try {
       return await createUser(user, password: password);
     } catch (e) {
-      log('Error in createUser: $e');
+      // log('Error in createUser: $e');
       throw Exception(e);
     }
   }
@@ -93,23 +100,33 @@ class UserController extends GetxController {
         email,
         password,
       );
-      await initScreen();
-      Get.offAllNamed("/app");
     } catch (e) {
-      log('Error in login: $e');
+      // log('Error in initUser: $e');
       throw Exception(e);
+    } finally {
+      await initUser();
+      Get.offAllNamed(
+        "/app",
+      );
     }
+
+    // log('User logged in');
   }
 
   Future<void> logout() async {
     try {
-      await _authData.signOut(redirect: '/');
-      await _userSubscription?.cancel();
-      await initCloseScreen();
+      Get.offAllNamed(
+        "/",
+      );
+      await _authData.signOut();
     } catch (e) {
-      log('Error in logout: $e');
+      // log('Error in logout: $e');
       throw Exception(e);
+    } finally {
+      await initCloseUser();
     }
+
+    // log('User logged out');
   }
 
   Future<UserBuilder?> getUser(String userId) async {
@@ -144,19 +161,22 @@ class UserController extends GetxController {
         ..createdAt = creationTime
         ..updatedAt = creationTime;
 
-      await docRef.update({
-        _requiredField: documentId,
-        "userId": authCreate.uid,
-        "isEmailVerified": authCreate.emailVerified,
-        "createdAt": creationTime,
-        "updatedAt": creationTime,
-      });
+      await docRef.update(user.toJson());
 
       return user;
     } catch (e) {
-      log('Error in createUser: $e');
+      // log('Error in createUser: $e');
       throw Exception(e);
     }
+  }
+
+  Future<void> _setStateLoad(StateLoad value, {int delay = 1}) async {
+    await _setDelay(milliseconds: delay);
+    _connectionState.value = value;
+  }
+
+  Future<void> _setDelay({required int milliseconds}) {
+    return Future.delayed(Duration(milliseconds: milliseconds));
   }
 
   Future<void> _subscribeToUser(String userId) async {
@@ -170,7 +190,7 @@ class UserController extends GetxController {
           if (userData != null) {
             await Future.delayed(const Duration(milliseconds: 500));
             _user.value = UserBuilder.fromJson(userData);
-            log('User data updated: ${_user.value?.displayName}');
+            // log('User data updated: ${_user.value?.displayName}');
           } else {
             throw Exception('Document data is null for user with id: $userId');
           }

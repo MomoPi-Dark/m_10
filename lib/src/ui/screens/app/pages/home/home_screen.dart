@@ -1,15 +1,13 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:menejemen_waktu/src/core/controllers/nav_select_controller.dart';
 import 'package:menejemen_waktu/src/core/controllers/task_controller.dart';
 import 'package:menejemen_waktu/src/core/controllers/theme_controller.dart';
 import 'package:menejemen_waktu/src/core/controllers/user_controller.dart';
 import 'package:menejemen_waktu/src/ui/screens/_layout/loadtasks_layout.dart';
 import 'package:menejemen_waktu/src/ui/screens/app/pages/layout_screen.dart';
+import 'package:menejemen_waktu/src/ui/widgets/taskcard.dart';
 import 'package:menejemen_waktu/src/utils/contants/colors.dart';
 import 'package:menejemen_waktu/src/utils/contants/contants.dart';
 
@@ -30,17 +28,9 @@ class _HomeScreenState extends State<HomeScreen> {
       DraggableScrollableController();
 
   @override
-  void initState() {
-    super.initState();
-    log("HomeScreen initialized");
-  }
-
-  @override
   void dispose() {
     _draggableScrollableController.dispose();
     super.dispose();
-
-    log("HomeScreen disposed");
   }
 
   OutlineInputBorder _buildBorder({
@@ -125,9 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildItems() {
     return LoadTasks(
       buildDoneChild: () {
-        final tasks = taskData.getTasks(
-          limit: 5,
-        );
+        final tasks = taskData.getTasks();
 
         if (tasks.isEmpty) {
           return Center(
@@ -145,6 +133,12 @@ class _HomeScreenState extends State<HomeScreen> {
           itemCount: tasks.length,
           itemBuilder: (context, index) {
             var task = tasks[index];
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+              child: TaskCard(
+                task: task,
+              ),
+            );
           },
         );
       },
@@ -194,25 +188,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return LayoutScreen(
       title: _buildTitle(),
+      toolbarHeight: 85.0,
       actions: [
-        IconButton(
-          onPressed: () async {
-            await userData.logout();
-          },
-          icon: Icon(Iconsax.logout),
-        ),
-        Obx(() {
-          return IconButton(
-            onPressed: () {
-              themeData.setThemeData(
-                themeData.isDarkMode() ? ThemeMode.light : ThemeMode.dark,
-              );
-            },
-            icon: themeData.isDarkMode()
-                ? Icon(Icons.dark_mode_sharp)
-                : Icon(Icons.light_mode_rounded),
-          );
-        }),
         Container(
           margin: const EdgeInsets.only(right: 10),
           child: const CircleAvatar(

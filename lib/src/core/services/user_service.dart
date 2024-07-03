@@ -75,7 +75,7 @@ class UserService {
 
       return user;
     } catch (e) {
-      log('Error in createUser: $e');
+      // log('Error in createUser: $e');
       throw Exception(e);
     }
   }

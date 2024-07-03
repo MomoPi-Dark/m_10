@@ -67,7 +67,6 @@ flutter:
     - assets/icons/
     - assets/fonts/
     - assets/loading/
-    - ./.env
 
   fonts:
     - family: SF Pro Display
@@ -75,4 +74,3 @@ flutter:
         - asset: assets/fonts/SF/Display/SF-Pro-Display-Regular.ttf
         - asset: assets/fonts/SF/Display/SF-Pro-Display-SemiBold.ttf
           weight: 600
-

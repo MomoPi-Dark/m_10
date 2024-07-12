@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:menejemen_waktu/routes.dart';
 import 'package:menejemen_waktu/src/core/controllers/theme_controller.dart';
 import 'package:menejemen_waktu/src/core/controllers/user_controller.dart';
 import 'package:menejemen_waktu/src/ui/screens/_components/welcome_image.dart';
 import 'package:menejemen_waktu/src/ui/screens/_layout/title_app.dart';
-import 'package:menejemen_waktu/src/utils/contants/colors.dart';
+import 'package:menejemen_waktu/src/utils/contants/colors.2.0.dart';
 
 class GuestScreen extends StatefulWidget {
   const GuestScreen({super.key});
@@ -14,7 +15,7 @@ class GuestScreen extends StatefulWidget {
   State<GuestScreen> createState() => _GuestScreenState();
 }
 
-class _GuestScreenState extends State<GuestScreen> {
+class _GuestScreenState extends State<GuestScreen> with WidgetsBindingObserver {
   final themeData = Get.find<ThemeController>();
   final userData = Get.find<UserController>();
 
@@ -82,7 +83,7 @@ class _GuestScreenState extends State<GuestScreen> {
               ),
               child: ElevatedButton(
                 onPressed: () {
-                  Get.toNamed("/login");
+                  Get.toNamed(cr('login'));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,

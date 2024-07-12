@@ -68,7 +68,7 @@ class MyApp extends StatelessWidget {
         darkTheme: themeProvider.darkMode,
         themeMode: themeProvider.themeMode(),
         debugShowCheckedModeBanner: false,
-        locale: const Locale('id', 'ID'),
+        color: Colors.white,
         onUnknownRoute: (settings) {
           return MaterialPageRoute(
             fullscreenDialog: true,

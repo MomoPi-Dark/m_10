@@ -38,7 +38,7 @@ class _AddTaskDropdownState extends State<AddTaskDropdown> {
   InputBorder _buildBorder() {
     return OutlineInputBorder(
       borderSide: BorderSide(
-        color: createThemeColorSchema2(
+        color: createThemeColorSchema(
           lightColor: Colors.black,
           darkColor: Colors.white,
         ),
@@ -57,7 +57,7 @@ class _AddTaskDropdownState extends State<AddTaskDropdown> {
           Text(
             widget.labelText,
             style: GoogleFonts.inter(
-              color: createThemeColorSchema2(
+              color: createThemeColorSchema(
                 lightColor: Colors.black,
                 darkColor: Colors.white,
               ),
@@ -71,6 +71,10 @@ class _AddTaskDropdownState extends State<AddTaskDropdown> {
               value: widget.selectedLabel,
               items: widget.items,
               onChanged: widget.onChanged,
+              iconEnabledColor: createThemeColorSchema(
+                lightColor: Colors.black,
+                darkColor: Colors.white,
+              ),
               decoration: InputDecoration(
                 hintText: widget.hintText,
                 suffixIcon: widget.sufficIcon,

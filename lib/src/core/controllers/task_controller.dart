@@ -19,14 +19,25 @@ class TaskController extends GetxController {
   final DatabaseService _db = DatabaseService();
   DocumentSnapshot? _lastDocument;
   String? _recordId;
-  final String _requiredField = 'userId';
+
   final String _subcollectionName = 'tasks';
   final RxList<TaskItemBuilder> _taskCache = <TaskItemBuilder>[].obs;
+
   StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _taskSubscription;
 
-  RxList<TaskItemBuilder> get tasks => _taskCache;
+  @override
+  void onClose() {
+    initCloseScreen();
+    super.onClose();
+  }
 
-  Rx<StateLoad> get connectionState => _connectionState;
+  @override
+  void onInit() {
+    super.onInit();
+    if (_auth.isLoggedIn()) {
+      initScreen();
+    }
+  }
 
   List<TaskItemBuilder> getTasks({int? limit}) {
     return _taskCache.take(limit ?? taskLimit).toList();
@@ -48,30 +59,30 @@ class TaskController extends GetxController {
     throw Exception('You must pass either id or task.');
   }
 
-  Future<List<TaskItemBuilder>> initScreen() async {
+  RxList<TaskItemBuilder> get tasks => _taskCache;
+
+  Rx<StateLoad> get connectionState => _connectionState;
+
+  Future<void> initScreen() async {
     if (_auth.currentUser == null ||
         _connectionState.value == StateLoad.loading ||
         _connectionState.value == StateLoad.done) {
-      return _taskCache;
+      return;
     }
 
-    _setStateLoad(StateLoad.loading);
+    await _setStateLoad(StateLoad.loading);
 
     try {
       _recordId ??= _auth.currentUser!.id;
       await loadTasks(loadMore: true);
       await _subscribeToTasks();
     } catch (e) {
-      // log('Error initializing task screen: $e');
+      log('Error initializing task screen: $e');
     }
 
-    _setStateLoad(
-      StateLoad.done,
-    );
+    await _setStateLoad(StateLoad.done);
 
-    // log('Task screen initialized');
-
-    return _taskCache;
+    log('Task screen initialized');
   }
 
   Future<void> initCloseScreen() async {
@@ -85,18 +96,11 @@ class TaskController extends GetxController {
       StateLoad.loading,
     );
 
-    if (_taskCache.isNotEmpty) {
-      await _setDelay(milliseconds: 1);
-      _taskCache.clear();
-    }
-
+    _taskSubscription?.cancel();
+    _taskSubscription = null;
+    _taskCache.clear();
     _lastDocument = null;
     _recordId = null;
-
-    if (_taskSubscription != null) {
-      await _taskSubscription?.cancel();
-      _taskSubscription = null;
-    }
 
     _setStateLoad(
       StateLoad.none,
@@ -106,7 +110,7 @@ class TaskController extends GetxController {
       _connectionState.value = StateLoad.waiting;
     }
 
-    // log('Task screen closed');
+    log('Task screen closed');
   }
 
   Future<void> loadTasks({bool loadMore = false, int? limit}) async {
@@ -148,7 +152,7 @@ class TaskController extends GetxController {
           _taskCache.assignAll(loadedTasks);
         }
 
-        // log('Task data loaded: ${loadedTasks.length} tasks');
+        log('Task data loaded: ${loadedTasks.length} tasks');
       }
     } catch (e) {
       throw Exception(e);
@@ -176,7 +180,7 @@ class TaskController extends GetxController {
 
       await docRef.update(task.toJson());
 
-      // log('Task successfully added: ${task.id}');
+      log('Task successfully added: ${task.id}');
     } catch (e) {
       // log('Error adding task: $e');
       throw Exception(e);
@@ -196,7 +200,7 @@ class TaskController extends GetxController {
       task.id = tk.id;
       task.userId = tk.userId;
       task.createdAt = tk.createdAt;
-      task.updatedAt = DateTime.now().toString();
+      task.setUpdatedAt(DateTime.now().toString());
 
       await _db.findOneAndUpdateSubcollection(
         _collectionName,
@@ -211,9 +215,9 @@ class TaskController extends GetxController {
 
       if (index != -1) {
         _taskCache[index] = task;
-        // log('Task successfully updated: ${task.toJson()}');
+        log('Task successfully updated: ${task.toJson()}');
       } else {
-        // log('Task not found in cache: ${task.id}');
+        log('Task not found in cache: ${task.id}');
       }
     } catch (e) {
       // log('Error updating task: $e');
@@ -240,24 +244,13 @@ class TaskController extends GetxController {
         isEqualTo: task.id,
       );
 
+      _taskCache.removeWhere((t) => t.id == task.id);
+
       // log('Task successfully deleted: ${task.id}');
     } catch (e) {
       // log("Error deleting task: $e");
       throw Exception(e);
     }
-  }
-
-  TaskItemBuilder _getTaskCache(String id) {
-    return _taskCache.firstWhere((t) => t.id == id);
-  }
-
-  Future<void> _setStateLoad(StateLoad value, {int delay = 1}) async {
-    await _setDelay(milliseconds: delay);
-    _connectionState.value = value;
-  }
-
-  Future<void> _setDelay({required int milliseconds}) {
-    return Future.delayed(Duration(milliseconds: milliseconds));
   }
 
   Future<void> _subscribeToTasks() async {
@@ -278,14 +271,27 @@ class TaskController extends GetxController {
         await _setDelay(milliseconds: 1);
         _taskCache.value = loadedTasks;
 
-        // log("Task data updated: ${_taskCache.length} tasks");
+        log("Task data updated: ${_taskCache.length} tasks");
       },
       onError: (e) {
         throw Exception('Error subscribing to task data: $e');
       },
       onDone: () {
-        // log('Task data subscription done');
+        log('Task data subscription done');
       },
     );
+  }
+
+  Future<void> _setStateLoad(StateLoad value, {int delay = 1}) async {
+    await _setDelay(milliseconds: delay);
+    _connectionState.value = value;
+  }
+
+  Future<void> _setDelay({required int milliseconds}) {
+    return Future.delayed(Duration(milliseconds: milliseconds));
+  }
+
+  TaskItemBuilder _getTaskCache(String id) {
+    return _taskCache.firstWhere((t) => t.id == id);
   }
 }

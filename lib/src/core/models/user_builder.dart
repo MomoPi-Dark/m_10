@@ -9,8 +9,8 @@ String userBuilderToJson(UserBuilder data) => json.encode(data.toJson());
 
 class UserBuilder {
   UserBuilder({
-    this.email = "unknown@gmail.com",
-    this.displayName = "Unknown",
+    this.email = "guest@gmail.com",
+    this.displayName = "Guest",
     this.id = "",
     this.userId = "",
     this.isEmailVerified = false,
@@ -48,10 +48,6 @@ class UserBuilder {
   String get updatedTimestamp =>
       DateFormat.yMMMMEEEEd().format(DateTime.parse(updatedAt));
 
-  void changeUpdateTime(DateTime time) {
-    updatedAt = time.toIso8601String();
-  }
-
   Map<String, dynamic> toJson() => {
         "id": id,
         "userId": userId,
@@ -63,4 +59,40 @@ class UserBuilder {
         "createdAt": createdAt,
         "updatedAt": updatedAt,
       };
+
+  void changeDisplayName(String name) {
+    displayName = name;
+  }
+
+  void changeEmail(String mail) {
+    email = mail;
+  }
+
+  void changePhoneNumber(String phone) {
+    phoneNumber = phone;
+  }
+
+  void changePhotoURL(String url) {
+    photoURL = url;
+  }
+
+  void changeEmailVerification(bool status) {
+    isEmailVerified = status;
+  }
+
+  void changeUserId(String uid) {
+    userId = uid;
+  }
+
+  void changeId(String id) {
+    this.id = id;
+  }
+
+  void changeCreatedAt(String time) {
+    createdAt = time;
+  }
+
+  void changeUpdatedAt(String time) {
+    updatedAt = time;
+  }
 }

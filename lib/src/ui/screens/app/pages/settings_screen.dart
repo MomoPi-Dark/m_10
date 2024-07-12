@@ -8,14 +8,14 @@ import 'package:menejemen_waktu/src/ui/screens/app/pages/layout_screen.dart';
 import 'package:menejemen_waktu/src/utils/contants/colors.2.0.dart';
 import 'package:menejemen_waktu/src/utils/contants/contants.dart';
 
-class MoreScreen extends StatefulWidget {
-  const MoreScreen({super.key});
+class SettingScreen extends StatefulWidget {
+  const SettingScreen({super.key});
 
   @override
-  State<MoreScreen> createState() => _MoreScreenState();
+  State<SettingScreen> createState() => _SettingScreenState();
 }
 
-class _MoreScreenState extends State<MoreScreen> {
+class _SettingScreenState extends State<SettingScreen> {
   final _theme = Get.find<ThemeController>();
   final _user = Get.find<UserController>();
 
@@ -34,7 +34,9 @@ class _MoreScreenState extends State<MoreScreen> {
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                Get.toNamed("/profile");
+              },
               borderRadius: BorderRadius.circular(8.0),
               splashColor: Colors.grey.withOpacity(0.5),
               child: ListTile(
@@ -141,7 +143,6 @@ class _MoreScreenState extends State<MoreScreen> {
           "Settings",
           style: appBarTitleStyle,
         ),
-        centerTitle: true,
         bodyChild: _buildBody(),
       );
     });

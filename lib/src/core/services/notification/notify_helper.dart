@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter_native_timezone_updated_gradle/flutter_native_timezone.dart';
 import 'package:intl/intl.dart';

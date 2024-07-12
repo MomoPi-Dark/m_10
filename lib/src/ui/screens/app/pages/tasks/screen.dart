@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -24,7 +23,8 @@ class TaskScreen extends StatefulWidget {
 
 class _TaskScreenState extends State<TaskScreen> {
   final arguments = Get.arguments;
-  late TaskItemBuilder? existingTask;
+
+  late final TaskItemBuilder? existingTask;
   TaskController taskController = Get.put(TaskController());
   TextEditingController taskNameController = TextEditingController();
   TextEditingController taskNoteController = TextEditingController();
@@ -47,8 +47,10 @@ class _TaskScreenState extends State<TaskScreen> {
   @override
   void initState() {
     super.initState();
+
     existingTask = arguments;
-    if (existingTask != null) {
+
+    if (arguments != null) {
       taskNameController.text = existingTask!.title;
       taskNoteController.text = existingTask!.note;
       _selectedLabel = existingTask!.label;
@@ -157,23 +159,6 @@ class _TaskScreenState extends State<TaskScreen> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime startTimeFormat;
-    DateTime endTimeFormat;
-
-    try {
-      startTimeFormat = DateFormat(dateTimeTaskFormat)
-          .parse(_formatTimeOfStringDay(_startTime));
-      endTimeFormat = DateFormat(dateTimeTaskFormat)
-          .parse(_formatTimeOfStringDay(_endTime));
-
-      // log("Date: $_selectedDate, Start: $startTimeFormat, End: $endTimeFormat");
-    } catch (e) {
-      // log("Error parsing time on build: $e");
-
-      startTimeFormat = DateTime.now();
-      endTimeFormat = DateTime.now().add(const Duration(minutes: 1));
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -332,21 +317,29 @@ class _TaskScreenState extends State<TaskScreen> {
                   onPressed: () async {
                     if (_validate()) return;
 
-                    await _saveTask();
+                    try {
+                      await _saveTask();
+                    } catch (e) {
+                      Get.snackbar(
+                        "Error",
+                        "Failed to create task",
+                        snackPosition: SnackPosition.TOP,
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white,
+                      );
+                    } finally {
+                      Get.back();
 
-                    await Future.delayed(const Duration(milliseconds: 500));
-
-                    Get.back();
-
-                    Get.snackbar(
-                      "Success",
-                      existingTask == null
-                          ? "Task Created Successfully"
-                          : "Task Updated Successfully",
-                      snackPosition: SnackPosition.TOP,
-                      backgroundColor: Colors.green,
-                      colorText: Colors.white,
-                    );
+                      Get.snackbar(
+                        "Success",
+                        existingTask == null
+                            ? "Task Created Successfully"
+                            : "Task Updated Successfully",
+                        snackPosition: SnackPosition.TOP,
+                        backgroundColor: Colors.green,
+                        colorText: Colors.white,
+                      );
+                    }
                   },
                   text: Text(
                     existingTask == null ? "Create Task" : "Update Task",

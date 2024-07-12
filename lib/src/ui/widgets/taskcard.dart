@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,10 +5,10 @@ import 'package:intl/intl.dart';
 import 'package:menejemen_waktu/src/core/controllers/task_controller.dart';
 import 'package:menejemen_waktu/src/core/controllers/theme_controller.dart';
 import 'package:menejemen_waktu/src/core/models/tasks_item_builder.dart';
-import 'package:menejemen_waktu/src/utils/contants/colors.dart';
 import 'package:menejemen_waktu/src/utils/contants/contants.dart';
 
 import '../../../routes.dart';
+import '../../utils/contants/colors.2.0.dart';
 
 final timeFormat = DateFormat('hh:mm a');
 
@@ -73,7 +71,11 @@ class _TaskCardState extends State<TaskCard> {
       ),
       onSelected: (result) async {
         if (result == "edit") {
-          Get.toNamed(cr("edittask"), arguments: widget.task);
+          Get.toNamed(
+              cr(
+                "edittask",
+              ),
+              arguments: widget.task);
         } else if (result == "delete") {
           try {
             await Get.find<TaskController>().deleteTask(widget.task);

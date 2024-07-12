@@ -42,7 +42,7 @@ class AddTaskTextForm extends StatelessWidget {
           Text(
             labelText,
             style: GoogleFonts.inter(
-              color: createThemeColorSchema2(
+              color: createThemeColorSchema(
                 lightColor: Colors.black,
                 darkColor: Colors.white,
               ),
@@ -58,7 +58,7 @@ class AddTaskTextForm extends StatelessWidget {
               keyboardType: keyboardType,
               obscureText: obscureText,
               enableSuggestions: true,
-              cursorColor: createThemeColorSchema2(
+              cursorColor: createThemeColorSchema(
                 lightColor: Colors.black,
                 darkColor: Colors.white,
               ),
@@ -68,7 +68,7 @@ class AddTaskTextForm extends StatelessWidget {
                 suffixIcon: sufficIcon,
                 prefixIcon: icon != null ? Icon(icon) : null,
                 hintStyle: GoogleFonts.inter(
-                  color: createThemeColorSchema2(
+                  color: createThemeColorSchema(
                     lightColor: Colors.black,
                     darkColor: Colors.white,
                   ),
@@ -89,7 +89,7 @@ class AddTaskTextForm extends StatelessWidget {
   InputBorder _buildBorder() {
     return OutlineInputBorder(
       borderSide: BorderSide(
-        color: createThemeColorSchema2(
+        color: createThemeColorSchema(
           lightColor: Colors.black,
           darkColor: Colors.white,
         ),

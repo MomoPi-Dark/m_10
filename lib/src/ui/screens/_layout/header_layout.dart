@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:menejemen_waktu/src/utils/contants/colors.dart';
+import 'package:menejemen_waktu/src/utils/contants/colors.2.0.dart';
 import 'package:menejemen_waktu/src/utils/contants/contants.dart';
 
 class HeaderLayout extends StatelessWidget {

@@ -4,12 +4,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:menejemen_waktu/routes.dart';
 import 'package:menejemen_waktu/src/core/controllers/nav_select_controller.dart';
-import 'package:menejemen_waktu/src/core/controllers/task_controller.dart';
 import 'package:menejemen_waktu/src/core/controllers/theme_controller.dart';
 import 'package:menejemen_waktu/src/core/controllers/user_controller.dart';
-import 'package:menejemen_waktu/src/core/services/auth_service.dart';
 import 'package:menejemen_waktu/src/utils/contants/colors.2.0.dart';
-import 'package:menejemen_waktu/src/utils/contants/colors.dart';
 import 'package:menejemen_waktu/src/utils/contants/contants.dart';
 
 class AppScreen extends StatefulWidget {
@@ -20,27 +17,39 @@ class AppScreen extends StatefulWidget {
 }
 
 class _AppScreenState extends State<AppScreen> with WidgetsBindingObserver {
-  final navData = Get.find<NavSelectController>();
-  final taskData = Get.find<TaskController>();
-  final themeData = Get.find<ThemeController>();
-  final userData = Get.find<UserController>();
+  final _navData = Get.find<NavSelectController>();
+  final _themeData = Get.find<ThemeController>();
+  final _userData = Get.find<UserController>();
 
-  final _auth = AuthService();
+  @override
+  void didChangePlatformBrightness() {
+    super.didChangePlatformBrightness();
+    _themeData.init();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   @override
   void initState() {
     super.initState();
-    if (_auth.currentUser == null) {
+    if (_userData.currentUser == null) {
       Get.snackbar("Error messages", "You are not logged in!");
       Get.offAllNamed(initialRoute);
     }
+
+    WidgetsBinding.instance.addObserver(this);
+    _themeData.init();
   }
 
   Widget _buildBottomNavigationBar() {
     return Obx(() {
       return NavigationBarTheme(
         data: NavigationBarThemeData(
-          backgroundColor: themeData.currentTheme().colorScheme.secondary,
+          backgroundColor: _themeData.currentTheme().colorScheme.secondary,
           indicatorColor: customBottomNavbarIndicatorLayoutColor,
           labelTextStyle: WidgetStateProperty.resolveWith<TextStyle?>(
             (Set<WidgetState> states) {
@@ -67,13 +76,13 @@ class _AppScreenState extends State<AppScreen> with WidgetsBindingObserver {
           ),
         ),
         child: Container(
-          color: themeData.currentTheme().colorScheme.primary,
+          color: _themeData.currentTheme().colorScheme.primary,
           child: NavigationBar(
-            destinations: navData.destinations,
+            destinations: _navData.destinations,
             onDestinationSelected: (i) {
-              navData.changeDestination(i);
+              _navData.changeDestination(i);
             },
-            selectedIndex: navData.selectedIndex,
+            selectedIndex: _navData.selectedIndex,
             animationDuration: const Duration(milliseconds: 200),
           ),
         ),
@@ -86,14 +95,14 @@ class _AppScreenState extends State<AppScreen> with WidgetsBindingObserver {
     return Obx(() {
       return SafeArea(
         child: Scaffold(
-          backgroundColor: themeData.currentTheme().colorScheme.primary,
+          backgroundColor: _themeData.currentTheme().colorScheme.primary,
           bottomNavigationBar: _buildBottomNavigationBar(),
           floatingActionButton: Obx(() {
             return FloatingActionButton(
               backgroundColor: defaultContainerSecondaryLayoutColor,
               onPressed: () {
                 Get.toNamed(
-                  '/addtask',
+                  cr('addtask'),
                 );
               },
               child: Icon(
@@ -117,9 +126,9 @@ class _AppScreenState extends State<AppScreen> with WidgetsBindingObserver {
             },
             duration: const Duration(seconds: 1),
             child: Container(
-              key: ValueKey(navData.selectedIndex),
-              color: themeData.currentTheme().colorScheme.secondary,
-              child: navData.getScreen(),
+              key: ValueKey(_navData.selectedIndex),
+              color: _themeData.currentTheme().colorScheme.secondary,
+              child: _navData.getScreen(),
             ),
           ),
         ),

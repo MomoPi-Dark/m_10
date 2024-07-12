@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:menejemen_waktu/routes.dart';
 import 'package:menejemen_waktu/src/core/controllers/user_controller.dart';
 import 'package:menejemen_waktu/src/core/models/user_builder.dart';
 import 'package:menejemen_waktu/src/ui/screens/_layout/title_app.dart';
@@ -50,7 +51,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
     await _user.signup(userCreate, password);
 
-    Get.toNamed("/login");
+    Get.toNamed(cr("login"));
 
     Get.snackbar(
       "Signup Success",
@@ -103,7 +104,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     children: [
                       const Text("Already have an account? "),
                       InkWell(
-                        onTap: () => Get.toNamed("/login"),
+                        onTap: () => Get.toNamed(cr('login')),
                         child: const Text(
                           "Signin",
                           style: TextStyle(color: Colors.red),

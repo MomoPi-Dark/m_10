@@ -25,9 +25,9 @@ class TitleApp extends StatelessWidget {
           style: GoogleFonts.nunito(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: createThemeColorSchema2(
-              darkColor: yellow0,
-              lightColor: orange0,
+            color: createThemeColorSchema(
+              darkColor: yellow,
+              lightColor: orange,
             ),
           ),
         ),

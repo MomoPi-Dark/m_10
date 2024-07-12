@@ -20,22 +20,16 @@ class Wrapper extends StatefulWidget {
 
 class _WrapperState extends State<Wrapper> {
   final _navData = Get.find<NavSelectController>();
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
   final _taskData = Get.find<TaskController>();
-  final _userData = Get.find<UserController>();
   final _themeData = Get.find<ThemeController>();
+  final _userData = Get.find<UserController>();
 
   @override
   void initState() {
     super.initState();
     _navData.init();
-  }
-
-  Widget _buildLoading() {
-    return const Center(
-      child: CircularProgressIndicator(
-        color: Colors.blue,
-      ),
-    );
+    _themeData.init();
   }
 
   Widget _blankScreen() {
@@ -55,7 +49,7 @@ class _WrapperState extends State<Wrapper> {
         }
 
         return Obx(() {
-          if (!_userData.isReady) return _blankScreen();
+          if (!_userData.isLoggedIn()) return _blankScreen();
 
           _taskData.initScreen();
           return const AppScreen();
@@ -73,9 +67,8 @@ class _WrapperState extends State<Wrapper> {
         }
 
         return Obx(() {
-          if (_userData.isReady) return _blankScreen();
+          if (_userData.isLoggedIn()) return _blankScreen();
 
-          _taskData.initCloseScreen();
           return const GuestScreen();
         });
       },
@@ -95,11 +88,13 @@ class _WrapperState extends State<Wrapper> {
       extendBody: true,
       backgroundColor: _themeData.currentTheme().colorScheme.primary,
       body: StreamBuilder<User?>(
+        key: _navigatorKey,
         initialData: AuthService().currentUser,
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            // log('Error: ${snapshot.error}');
+            log('Error: ${snapshot.error}');
+            return _buildError();
           }
 
           if (snapshot.hasData) {

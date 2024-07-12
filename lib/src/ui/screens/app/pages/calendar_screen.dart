@@ -10,7 +10,6 @@ import 'package:menejemen_waktu/src/core/models/tasks_item_builder.dart';
 import 'package:menejemen_waktu/src/ui/screens/app/pages/layout_screen.dart';
 import 'package:menejemen_waktu/src/ui/widgets/taskcard.dart';
 import 'package:menejemen_waktu/src/utils/contants/colors.2.0.dart';
-import 'package:menejemen_waktu/src/utils/contants/colors.dart';
 import 'package:menejemen_waktu/src/utils/contants/contants.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 
@@ -119,9 +118,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                child: _buildTimeLine(colorList[task.color]),
-              ),
+              _buildTimeLine(colorList[task.color]),
               const SizedBox(
                 width: 35,
               ),
@@ -138,7 +135,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Widget _buildTimeLine(Color color) {
     return SizedBox(
       width: 20,
-      height: MediaQuery.of(context).size.height / 6.5,
+      height: MediaQuery.of(context).size.height / 6.6,
       child: TimelineTile(
         alignment: TimelineAlign.center,
         indicatorStyle: IndicatorStyle(
@@ -196,7 +193,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         controller: _dateController,
         daysCount: daysInMonth,
         selectionColor:
-            createThemeColorSchema(lightColor: orange0, darkColor: yellow0),
+            createThemeColorSchema(lightColor: yellow, darkColor: yellow),
         dateTextStyle: GoogleFonts.lato(
           textStyle: const TextStyle(
             fontSize: 20,

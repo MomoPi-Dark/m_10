@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:menejemen_waktu/src/utils/contants/colors.dart';
+import 'package:menejemen_waktu/src/utils/contants/colors.2.0.dart';
 
 const double defaultPadding = 16.0;
 const int defaultDelayLoading = 1;

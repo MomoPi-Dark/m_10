@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,9 +13,8 @@ class ItemInfoScreen extends StatefulWidget {
 class _ItemInfoScreenState extends State<ItemInfoScreen> {
   @override
   Widget build(BuildContext context) {
-    var data = Get.arguments;
+    var data = Get.arguments as Map<String, dynamic>;
     var dataFromJson = TaskItemBuilder.fromJson(data);
-    // log("Data: $dataFromJson");
 
     return Scaffold(
       appBar: AppBar(

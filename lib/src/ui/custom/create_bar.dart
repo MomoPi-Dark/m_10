@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:menejemen_waktu/src/utils/contants/colors.dart';
+import 'package:menejemen_waktu/src/utils/contants/colors.2.0.dart';
 
 /// Creates a widget with an icon and a notification badge.
 ///
@@ -43,7 +43,7 @@ Widget createIconNotif({
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: crycleColor,
-              borderRadius: BorderRadius.circular(8), // Make it fully circular
+              borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
               countNotif > 99 ? '99+' : countNotif.toString(),

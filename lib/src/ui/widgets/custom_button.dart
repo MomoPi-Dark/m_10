@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '/src/utils/contants/colors.dart';
+import 'package:menejemen_waktu/src/utils/contants/colors.2.0.dart';
 
 class CustomButton extends StatefulWidget {
   const CustomButton({

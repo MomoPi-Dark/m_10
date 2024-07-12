@@ -13,12 +13,14 @@ class UserController extends GetxController {
   final AuthService _authData = AuthService();
   final Rx<StateLoad> _connectionState = StateLoad.waiting.obs;
   final DatabaseService _db = DatabaseService();
+
   final String _requiredField = 'userId';
   final String _tableName = 'users';
+
   final Rx<UserBuilder?> _user = Rx<UserBuilder?>(null);
   StreamSubscription<DocumentSnapshot>? _userSubscription;
 
-  bool get isReady => _user.value != null;
+  RxBool get isLoggedIn => (_user.value != null).obs;
 
   UserBuilder? get currentUser => _user.value;
 
@@ -29,21 +31,20 @@ class UserController extends GetxController {
       return null;
     }
 
-    _setStateLoad(StateLoad.loading);
+    await _setStateLoad(StateLoad.loading);
 
     var user = await getUser(_authData.currentUser!.uid);
 
     if (user == null) {
-      // log('User data tidak ditemukan pada saat inisialisasi layar');
       return null;
     }
 
     _user.value = user;
     _subscribeToUser(user.id);
 
-    _setStateLoad(StateLoad.done, delay: 500);
+    await _setStateLoad(StateLoad.done, delay: 500);
 
-    // log('User screen initialized ${_user.value?.displayName}');
+    log('User screen initialized ${_user.value?.displayName}');
 
     return user;
   }
@@ -55,7 +56,7 @@ class UserController extends GetxController {
       return;
     }
 
-    _setStateLoad(StateLoad.loading);
+    await _setStateLoad(StateLoad.loading);
 
     _user.value = null;
 
@@ -64,9 +65,9 @@ class UserController extends GetxController {
       _userSubscription = null;
     }
 
-    _setStateLoad(StateLoad.waiting, delay: 500);
+    await _setStateLoad(StateLoad.waiting, delay: 500);
 
-    // log('User screen closed');
+    log('User screen closed');
   }
 
   Future<UserBuilder?> updateUser(UserBuilder user) async {
@@ -100,17 +101,18 @@ class UserController extends GetxController {
         email,
         password,
       );
-    } catch (e) {
-      // log('Error in initUser: $e');
-      throw Exception(e);
-    } finally {
+
       await initUser();
+
       Get.offAllNamed(
         "/app",
       );
+    } catch (e) {
+      log('Error in initUser: $e');
+      throw Exception(e);
     }
 
-    // log('User logged in');
+    log('User logged in');
   }
 
   Future<void> logout() async {

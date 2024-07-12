@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import 'package:menejemen_waktu/src/core/controllers/task_controller.dart';
 import 'package:menejemen_waktu/src/core/models/tasks_item_builder.dart';
 import 'package:menejemen_waktu/src/ui/screens/app/pages/layout_screen.dart';
-
-import 'package:menejemen_waktu/src/utils/contants/colors.dart';
+import 'package:menejemen_waktu/src/ui/widgets/taskcard.dart';
+import 'package:menejemen_waktu/src/utils/contants/colors.2.0.dart';
 import 'package:menejemen_waktu/src/utils/contants/contants.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -36,9 +36,17 @@ class _SearchScreenState extends State<SearchScreen> {
             labelItem[task.label].toLowerCase().contains(searchText))
         .toList();
 
-    await Future.delayed(const Duration(seconds: 2));
+    // await Future.delayed(const Duration(seconds: 2));
 
     return tasks;
+  }
+
+  bool _validateSearch() {
+    if (_searchController.text.isEmpty) {
+      return false;
+    }
+
+    return true;
   }
 
   Widget _buildBody() {
@@ -89,7 +97,7 @@ class _SearchScreenState extends State<SearchScreen> {
             child: FutureBuilder<List<TaskItemBuilder>>(
               future: updateItems(),
               builder: (context, snapshot) {
-                if (_searchController.text.isEmpty) {
+                if (_validateSearch()) {
                   return Center(
                     child: Text(
                       "Enter a search term",
@@ -128,10 +136,12 @@ class _SearchScreenState extends State<SearchScreen> {
                     itemBuilder: (context, index) {
                       final task = tasks[index];
 
-                      return ListTile(
-                        title: Text(task.title),
-                        subtitle: Text(labelItem[task.label]),
-                      );
+                      // return ListTile(
+                      //   title: Text(task.title),
+                      //   subtitle: Text(labelItem[task.label]),
+                      // );
+
+                      return TaskCard(task: task);
                     },
                   );
                 }

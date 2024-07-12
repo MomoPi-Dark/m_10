@@ -1,10 +1,12 @@
+import 'dart:developer';
+
 import 'package:enefty_icons/enefty_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:menejemen_waktu/src/ui/custom/create_bar.dart';
 import 'package:menejemen_waktu/src/ui/screens/app/pages/calendar_screen.dart';
-import 'package:menejemen_waktu/src/ui/screens/app/pages/home/home_screen.dart';
-import 'package:menejemen_waktu/src/ui/screens/app/pages/more_screen.dart';
+import 'package:menejemen_waktu/src/ui/screens/app/pages/home_screen.dart';
+import 'package:menejemen_waktu/src/ui/screens/app/pages/settings_screen.dart';
 
 class NavSelectController extends GetxController {
   final RxInt _selectedIndex = (0).obs;
@@ -21,13 +23,15 @@ class NavSelectController extends GetxController {
   }
 
   Widget getScreen() {
+    log("Selected Index: $selectedIndex");
+
     switch (selectedIndex) {
       case 0:
         return const HomeScreen();
       case 1:
         return const CalendarScreen();
       case 2:
-        return const MoreScreen();
+        return const SettingScreen();
       default:
         return const Scaffold(
           body: SafeArea(

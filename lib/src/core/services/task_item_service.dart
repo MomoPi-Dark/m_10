@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:menejemen_waktu/src/core/models/tasks_item_builder.dart';
 import 'package:menejemen_waktu/src/core/services/auth_service.dart';
@@ -50,9 +48,7 @@ class TaskItemService {
 
       return data.docs.map((e) => TaskItemBuilder.fromJson(e.data())).toList();
     } catch (e) {
-      // Handle exceptions here, e.g., log the error
-      // log('Error in getTaskItems: $e');
-      throw Exception(e); // Return an empty list or throw the error as needed
+      throw Exception(e);
     }
   }
 

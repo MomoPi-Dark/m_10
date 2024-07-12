@@ -8,23 +8,23 @@ const fontFamily = "SF Pro Display";
 const fontFamilyFallback = ["SF Pro Display", "SF Pro Text"];
 
 class ThemeController extends GetxController {
-  late final GetStorage storeTheme;
+  final GetStorage storeTheme = GetStorage();
 
   final _themeMode = ThemeMode.system.obs;
 
   @override
-  void onInit() async {
+  void onInit() {
     super.onInit();
-    await init();
+    init();
   }
 
   Future<void> init() async {
-    storeTheme = GetStorage();
-
     String? getTheme = storeTheme.read("theme");
 
     if (getTheme != null) {
       setThemeData(parseThemeMode(getTheme));
+    } else {
+      setThemeData(ThemeMode.system);
     }
   }
 
@@ -78,7 +78,7 @@ class ThemeController extends GetxController {
   void setThemeData(ThemeMode themeMode) {
     _themeMode.value = themeMode;
     _setStoreTheme(themeMode);
-    _setUIColor();
+    setUIColor(currentTheme.value);
   }
 
   ThemeMode parseThemeMode(String themeString) {
@@ -92,19 +92,14 @@ class ThemeController extends GetxController {
     }
   }
 
-  void _setUIColor() {
-    ThemeData theme = currentTheme();
-
+  void setUIColor(ThemeData theme) {
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-        systemNavigationBarIconBrightness:
-            isDarkMode.value ? Brightness.light : Brightness.dark,
-        systemNavigationBarColor: theme.colorScheme.secondary,
+        statusBarIconBrightness: theme.colorScheme.brightness,
+        statusBarBrightness: theme.colorScheme.brightness,
+        systemNavigationBarIconBrightness: theme.colorScheme.brightness,
         statusBarColor: theme.colorScheme.primary,
-        statusBarIconBrightness:
-            isDarkMode.value ? Brightness.light : Brightness.dark,
-        statusBarBrightness:
-            isDarkMode.value ? Brightness.light : Brightness.dark,
+        systemNavigationBarColor: theme.colorScheme.secondary,
         systemNavigationBarDividerColor: theme.colorScheme.secondary,
       ),
     );

@@ -3,7 +3,8 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:menejemen_waktu/src/core/controllers/task_controller.dart';
 import 'package:menejemen_waktu/src/core/models/tasks_item_builder.dart';
-import 'package:menejemen_waktu/src/utils/contants/colors.dart';
+import 'package:menejemen_waktu/src/ui/widgets/taskcard.dart';
+import 'package:menejemen_waktu/src/utils/contants/colors.2.0.dart';
 import 'package:menejemen_waktu/src/utils/contants/contants.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -38,37 +39,16 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildBody() {
-    return Padding(
-      padding: defaultPaddingHorizontal,
-      child: FutureBuilder<List<TaskItemBuilder>>(
-        future: updateItems(),
-        builder: (context, snapshot) {
-          if (_searchController.text.isEmpty) {
-            return Center(
-              child: Text(
-                "Enter a search term",
-                style: bodyTextStyle.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: Heading.h4,
-                ),
-              ),
-            );
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-                child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-            ));
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            List<TaskItemBuilder> tasks = snapshot.data ?? [];
-
-            if (_searchController.text.isEmpty || tasks.isEmpty) {
+    return Obx(() {
+      return Padding(
+        padding: defaultPaddingHorizontal,
+        child: FutureBuilder<List<TaskItemBuilder>>(
+          future: updateItems(),
+          builder: (context, snapshot) {
+            if (_searchController.text.isEmpty) {
               return Center(
                 child: Text(
-                  "No data found",
+                  "Enter a search term",
                   style: bodyTextStyle.copyWith(
                     fontWeight: FontWeight.bold,
                     fontSize: Heading.h4,
@@ -77,21 +57,46 @@ class _SearchScreenState extends State<SearchScreen> {
               );
             }
 
-            return ListView.builder(
-              itemCount: tasks.length,
-              itemBuilder: (context, index) {
-                final task = tasks[index];
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                  child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+              ));
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else {
+              List<TaskItemBuilder> tasks = snapshot.data ?? [];
 
-                return ListTile(
-                  title: Text(task.title),
-                  subtitle: Text(labelItem[task.label]),
+              if (_searchController.text.isEmpty || tasks.isEmpty) {
+                return Center(
+                  child: Text(
+                    "No data found",
+                    style: bodyTextStyle.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: Heading.h4,
+                    ),
+                  ),
                 );
-              },
-            );
-          }
-        },
-      ),
-    );
+              }
+
+              return ListView.builder(
+                itemCount: tasks.length,
+                itemBuilder: (context, index) {
+                  final task = tasks[index];
+
+                  return Container(
+                    margin: const EdgeInsets.only(top: 20.0),
+                    child: TaskCard(
+                      task: task,
+                    ),
+                  );
+                },
+              );
+            }
+          },
+        ),
+      );
+    });
   }
 
   OutlineInputBorder _buildBorder() {

@@ -1,15 +1,6 @@
 import 'dart:convert';
-
 import 'package:intl/intl.dart';
 import 'package:menejemen_waktu/src/core/controllers/task_controller.dart';
-
-// Fungsi untuk mengubah JSON string menjadi objek TaskItemBuilder
-TaskItemBuilder taskItemBuilderFromJson(String str) =>
-    TaskItemBuilder.fromJson(json.decode(str));
-
-// Fungsi untuk mengubah objek TaskItemBuilder menjadi JSON string
-String taskItemBuilderToJson(TaskItemBuilder data) =>
-    json.encode(data.toJson());
 
 class TaskItemBuilder {
   TaskItemBuilder({
@@ -25,31 +16,36 @@ class TaskItemBuilder {
     this.repeat = "",
     this.color = 0,
     this.isTimeExceeded = 0,
-    this.createdAt = "",
-    this.updatedAt = "",
-  });
+    String? createdAt,
+    String? updatedAt,
+  })  : createdAt =
+            createdAt ?? DateFormat(dateTaskFormat).format(DateTime.now()),
+        updatedAt =
+            updatedAt ?? DateFormat(dateTaskFormat).format(DateTime.now());
 
   factory TaskItemBuilder.fromJson(Map<String, dynamic> json) {
     return TaskItemBuilder(
-      id: json['id'],
-      userId: json['userId'],
-      label: json['label'],
-      title: json['title'],
-      note: json['note'],
-      date: json['date'],
-      startTime: json['startTime'],
-      endTime: json['endTime'],
-      remind: json['remind'],
-      repeat: json['repeat'],
-      color: json['color'],
-      isTimeExceeded: json['isTimeExceeded'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
+      id: json['id'] ?? "",
+      userId: json['userId'] ?? "",
+      label: json['label'] ?? 0,
+      title: json['title'] ?? "",
+      note: json['note'] ?? "",
+      date: json['date'] ?? "",
+      startTime: json['startTime'] ?? "",
+      endTime: json['endTime'] ?? "",
+      remind: json['remind'] ?? 0,
+      repeat: json['repeat'] ?? "",
+      color: json['color'] ?? 0,
+      isTimeExceeded: json['isTimeExceeded'] ?? 0,
+      createdAt: json['createdAt'] ??
+          DateFormat(dateTaskFormat).format(DateTime.now()),
+      updatedAt: json['updatedAt'] ??
+          DateFormat(dateTaskFormat).format(DateTime.now()),
     );
   }
 
   int color;
-  String createdAt = DateFormat(dateTaskFormat).format(DateTime.now());
+  String createdAt;
   String date;
   String endTime;
   String id;
@@ -60,8 +56,14 @@ class TaskItemBuilder {
   String repeat;
   String startTime;
   String title;
-  String updatedAt = DateFormat(dateTaskFormat).format(DateTime.now());
+  String updatedAt;
   String userId;
+
+  String get createdTimestamp =>
+      DateFormat.yMMMMEEEEd().format(DateTime.parse(createdAt));
+
+  String get updatedTimestamp =>
+      DateFormat.yMMMMEEEEd().format(DateTime.parse(updatedAt));
 
   Map<String, dynamic> toJson() {
     return {
@@ -115,4 +117,60 @@ class TaskItemBuilder {
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
+
+  void setTitle(String title) {
+    this.title = title;
+  }
+
+  void setNote(String note) {
+    this.note = note;
+  }
+
+  void setLabel(int label) {
+    this.label = label;
+  }
+
+  void setDate(String date) {
+    this.date = date;
+  }
+
+  void setStartTime(String time) {
+    startTime = time;
+  }
+
+  void setEndTime(String time) {
+    endTime = time;
+  }
+
+  void setRemind(int remind) {
+    this.remind = remind;
+  }
+
+  void setRepeat(String repeat) {
+    this.repeat = repeat;
+  }
+
+  void setColor(int color) {
+    this.color = color;
+  }
+
+  void setIsTimeExceeded(int status) {
+    isTimeExceeded = status;
+  }
+
+  void setCreatedAt(String time) {
+    createdAt = time;
+  }
+
+  void setUpdatedAt(String time) {
+    updatedAt = time;
+  }
 }
+
+// Fungsi untuk mengubah JSON string menjadi objek TaskItemBuilder
+TaskItemBuilder taskItemBuilderFromJson(String str) =>
+    TaskItemBuilder.fromJson(json.decode(str));
+
+// Fungsi untuk mengubah objek TaskItemBuilder menjadi JSON string
+String taskItemBuilderToJson(TaskItemBuilder data) =>
+    json.encode(data.toJson());

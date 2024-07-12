@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:menejemen_waktu/routes.dart';
 import 'package:menejemen_waktu/src/core/controllers/theme_controller.dart';
 import 'package:menejemen_waktu/src/core/controllers/user_controller.dart';
 import 'package:menejemen_waktu/src/core/services/auth_service.dart';
@@ -118,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       const Text("You don't have an account? "),
                       InkWell(
-                        onTap: () => Get.toNamed("/signup"),
+                        onTap: () => Get.toNamed(cr('signup')),
                         child: const Text(
                           "Signup",
                           style: TextStyle(color: Colors.red),

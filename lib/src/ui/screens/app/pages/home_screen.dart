@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:menejemen_waktu/routes.dart';
 import 'package:menejemen_waktu/src/core/controllers/nav_select_controller.dart';
 import 'package:menejemen_waktu/src/core/controllers/task_controller.dart';
-import 'package:menejemen_waktu/src/core/controllers/theme_controller.dart';
 import 'package:menejemen_waktu/src/core/controllers/user_controller.dart';
 import 'package:menejemen_waktu/src/ui/screens/_layout/loadtasks_layout.dart';
 import 'package:menejemen_waktu/src/ui/screens/app/pages/layout_screen.dart';
 import 'package:menejemen_waktu/src/ui/widgets/taskcard.dart';
-import 'package:menejemen_waktu/src/utils/contants/colors.dart';
+import 'package:menejemen_waktu/src/utils/contants/colors.2.0.dart';
 import 'package:menejemen_waktu/src/utils/contants/contants.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,17 +21,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final navData = Get.find<NavSelectController>();
   final taskData = Get.find<TaskController>();
-  final themeData = Get.find<ThemeController>();
   final userData = Get.find<UserController>();
-
-  final DraggableScrollableController _draggableScrollableController =
-      DraggableScrollableController();
-
-  @override
-  void dispose() {
-    _draggableScrollableController.dispose();
-    super.dispose();
-  }
 
   OutlineInputBorder _buildBorder({
     Color? color,
@@ -155,28 +145,28 @@ class _HomeScreenState extends State<HomeScreen> {
           keyboardType: TextInputType.text,
           onTap: () {
             setState(() {
-              Get.toNamed("/search");
+              Get.toNamed(cr("search"));
             });
           },
           cursorColor: customSecondaryTextColor,
           decoration: InputDecoration(
-            fillColor: defaultCustomPrimaryLayoutColor,
+            fillColor: defaultContainerSecondaryLayoutColor,
             filled: true,
-            prefixIcon: const Icon(
+            prefixIcon: Icon(
               Icons.search_rounded,
-              color: Colors.grey,
+              color: defaultTextPrimaryLayoutColor,
             ),
             hintText: "Search...",
             hintStyle: GoogleFonts.karla(
-              color: Colors.grey,
+              color: defaultTextPrimaryLayoutColor,
               fontWeight: FontWeight.w500,
             ),
             hoverColor: customSecondaryLayoutColor,
             border: _buildBorder(),
             enabledBorder: _buildBorder(),
             disabledBorder: _buildBorder(),
-            suffixIconColor: Colors.grey,
-            prefixIconColor: Colors.grey,
+            suffixIconColor: defaultTextPrimaryLayoutColor,
+            prefixIconColor: defaultTextPrimaryLayoutColor,
             counterStyle: TextStyle(color: customSecondaryTextColor),
           ),
         ),
@@ -193,8 +183,10 @@ class _HomeScreenState extends State<HomeScreen> {
         Container(
           margin: const EdgeInsets.only(right: 10),
           child: const CircleAvatar(
-            backgroundImage: AssetImage("assets/images/person2.jpg"),
             radius: 25,
+            backgroundImage: AssetImage(
+              "assets/images/person2.jpg",
+            ),
           ),
         ),
       ],

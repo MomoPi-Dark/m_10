@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:menejemen_waktu/src/core/models/user_builder.dart';
 import 'package:menejemen_waktu/src/core/services/auth_service.dart';

@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:menejemen_waktu/src/core/controllers/theme_controller.dart';
 import 'package:menejemen_waktu/src/core/services/auth_service.dart';
 import 'package:menejemen_waktu/src/utils/contants/colors.2.0.dart';
-import 'package:menejemen_waktu/src/utils/contants/colors.dart';
 import 'package:menejemen_waktu/src/utils/contants/contants.dart';
 
 class LayoutScreen extends StatefulWidget {

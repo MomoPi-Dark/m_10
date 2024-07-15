@@ -36,7 +36,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     _changeResultDate();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 10));
       _dateController.jumpToSelection();
     });
   }
@@ -64,12 +64,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
               "Filter by",
               style: bodyTextStyle,
             ),
-            selectedItemBuilder: (context) {
-              return [
-                const Text("All"),
-                const Text("Completed"),
-              ];
-            },
             icon: Icon(
               Icons.filter_list,
               color: customPrimaryTextColor,
@@ -123,6 +117,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 width: 35,
               ),
               TaskCard(
+                width: MediaQuery.of(context).size.width - 119,
                 task: task,
               )
             ],

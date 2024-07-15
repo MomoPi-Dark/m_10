@@ -45,11 +45,12 @@ class UserController extends GetxController {
     await _setStateLoad(StateLoad.done, delay: 500);
 
     log('User screen initialized ${_user.value?.displayName}');
-
     return user;
   }
 
   Future<void> initCloseUser() async {
+    log('User screen closed');
+
     if (_authData.currentUser != null ||
         _connectionState.value == StateLoad.loading ||
         _user.value == null) {
@@ -66,8 +67,6 @@ class UserController extends GetxController {
     }
 
     await _setStateLoad(StateLoad.waiting, delay: 500);
-
-    log('User screen closed');
   }
 
   Future<UserBuilder?> updateUser(UserBuilder user) async {

@@ -5,6 +5,7 @@ import 'package:menejemen_waktu/routes.dart';
 import 'package:menejemen_waktu/src/core/controllers/theme_controller.dart';
 import 'package:menejemen_waktu/src/core/controllers/user_controller.dart';
 import 'package:menejemen_waktu/src/core/services/auth_service.dart';
+import 'package:menejemen_waktu/src/ui/screens/_layout/appbar.dart';
 import 'package:menejemen_waktu/src/ui/screens/_layout/title_app.dart';
 import 'package:menejemen_waktu/src/ui/widgets/custom_button.dart';
 import 'package:menejemen_waktu/src/ui/widgets/text_field.dart';
@@ -65,9 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        title: const TitleApp(),
-      ),
+      appBar: appCustom(),
       body: FormField(
           key: formKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,

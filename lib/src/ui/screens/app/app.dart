@@ -16,32 +16,14 @@ class AppScreen extends StatefulWidget {
   State<AppScreen> createState() => _AppScreenState();
 }
 
-class _AppScreenState extends State<AppScreen> with WidgetsBindingObserver {
+class _AppScreenState extends State<AppScreen> {
   final _navData = Get.find<NavSelectController>();
   final _themeData = Get.find<ThemeController>();
   final _userData = Get.find<UserController>();
 
   @override
-  void didChangePlatformBrightness() {
-    super.didChangePlatformBrightness();
-    _themeData.init();
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
   void initState() {
     super.initState();
-    if (_userData.currentUser == null) {
-      Get.snackbar("Error messages", "You are not logged in!");
-      Get.offAllNamed(initialRoute);
-    }
-
-    WidgetsBinding.instance.addObserver(this);
     _themeData.init();
   }
 

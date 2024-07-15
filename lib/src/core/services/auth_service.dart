@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
@@ -66,7 +68,7 @@ class AuthService {
       );
 
       if (cred.user != null) {
-        // log("User logged in: ${cred.user!.email}");
+        log("User logged in: ${cred.user!.email}");
       }
 
       return cred.user;

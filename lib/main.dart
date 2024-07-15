@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -18,11 +21,15 @@ import 'src/ui/screens/wrapper.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
   await GetStorage.init();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await NotificationHelper.configureLocalTimeZone();
-
   await NotificationHelper().initialize(
     null,
     channels,
@@ -68,16 +75,9 @@ class MyApp extends StatelessWidget {
         darkTheme: themeProvider.darkMode,
         themeMode: themeProvider.themeMode(),
         debugShowCheckedModeBanner: false,
-        color: Colors.white,
-        onUnknownRoute: (settings) {
-          return MaterialPageRoute(
-            fullscreenDialog: true,
-            builder: (context) => const Scaffold(
-              body: Center(
-                child: Text('Page not found'),
-              ),
-            ),
-          );
+        routingCallback: (routing) async {
+          await Future.delayed(const Duration(milliseconds: 100));
+          themeProvider.init();
         },
         home: const Wrapper(),
       );

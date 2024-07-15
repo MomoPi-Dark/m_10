@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -10,6 +12,7 @@ const fontFamilyFallback = ["SF Pro Display", "SF Pro Text"];
 class ThemeController extends GetxController {
   final GetStorage storeTheme = GetStorage();
 
+  final _currentTheme = ThemeData().obs;
   final _themeMode = ThemeMode.system.obs;
 
   @override
@@ -21,10 +24,12 @@ class ThemeController extends GetxController {
   Future<void> init() async {
     String? getTheme = storeTheme.read("theme");
 
+    log("Init ThemeController");
+
     if (getTheme != null) {
       setThemeData(parseThemeMode(getTheme));
     } else {
-      setThemeData(ThemeMode.system);
+      setThemeData(ThemeMode.light);
     }
   }
 
@@ -34,7 +39,6 @@ class ThemeController extends GetxController {
         scaffoldBackgroundColor: DarkColor.primary(),
         primaryColor: DarkColor.primary(),
         colorScheme: ColorScheme.dark(
-          brightness: Brightness.light,
           primary: DarkColor.primary(),
           secondary: DarkColor.secondary(),
         ),
@@ -50,7 +54,6 @@ class ThemeController extends GetxController {
         scaffoldBackgroundColor: LightColor.primary(),
         primaryColor: LightColor.primary(),
         colorScheme: ColorScheme.light(
-          brightness: Brightness.dark,
           primary: LightColor.primary(),
           secondary: LightColor.secondary(),
         ),
@@ -62,23 +65,15 @@ class ThemeController extends GetxController {
 
   Rx<ThemeMode> get themeMode => _themeMode;
 
-  Rx<ThemeData> get currentTheme {
-    switch (_themeMode.value) {
-      case ThemeMode.light:
-        return lightMode.obs;
-      case ThemeMode.dark:
-        return darkMode.obs;
-      default:
-        return lightMode.obs;
-    }
-  }
+  Rx<ThemeData> get currentTheme => _currentTheme;
 
   RxBool get isDarkMode => (_themeMode.value == ThemeMode.dark).obs;
 
   void setThemeData(ThemeMode themeMode) {
     _themeMode.value = themeMode;
+    _updateCurrentTheme();
     _setStoreTheme(themeMode);
-    setUIColor(currentTheme.value);
+    setUIColor();
   }
 
   ThemeMode parseThemeMode(String themeString) {
@@ -92,17 +87,34 @@ class ThemeController extends GetxController {
     }
   }
 
-  void setUIColor(ThemeData theme) {
+  void setUIColor() {
+    ThemeData theme = currentTheme.value;
+    Brightness brightness =
+        isDarkMode.value ? Brightness.light : Brightness.dark;
+
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-        statusBarIconBrightness: theme.colorScheme.brightness,
-        statusBarBrightness: theme.colorScheme.brightness,
-        systemNavigationBarIconBrightness: theme.colorScheme.brightness,
+        statusBarIconBrightness: brightness,
+        systemNavigationBarIconBrightness: brightness,
         statusBarColor: theme.colorScheme.primary,
         systemNavigationBarColor: theme.colorScheme.secondary,
         systemNavigationBarDividerColor: theme.colorScheme.secondary,
       ),
     );
+  }
+
+  void _updateCurrentTheme() {
+    switch (_themeMode.value) {
+      case ThemeMode.light:
+        _currentTheme.value = lightMode;
+        break;
+      case ThemeMode.dark:
+        _currentTheme.value = darkMode;
+        break;
+      default:
+        _currentTheme.value = lightMode;
+        break;
+    }
   }
 
   void _setStoreTheme(ThemeMode themeMode) {

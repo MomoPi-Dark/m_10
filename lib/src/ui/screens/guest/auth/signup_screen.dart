@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:menejemen_waktu/routes.dart';
 import 'package:menejemen_waktu/src/core/controllers/user_controller.dart';
 import 'package:menejemen_waktu/src/core/models/user_builder.dart';
+import 'package:menejemen_waktu/src/ui/screens/_layout/appbar.dart';
 import 'package:menejemen_waktu/src/ui/screens/_layout/title_app.dart';
 import 'package:menejemen_waktu/src/ui/widgets/custom_button.dart';
 import 'package:menejemen_waktu/src/ui/widgets/text_field.dart';
@@ -62,62 +63,62 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const TitleApp(),
-      ),
-      body: FormField(
-        key: formKey,
-        builder: (context) {
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
-              child: Column(
-                children: [
-                  const SizedBox(height: 50),
-                  CustomTextField(
-                    hint: "Enter Name",
-                    label: "Name",
-                    controller: _name,
-                  ),
-                  const SizedBox(height: 20),
-                  CustomTextField(
-                    hint: "Enter Email",
-                    label: "Email",
-                    controller: _email,
-                  ),
-                  const SizedBox(height: 20),
-                  CustomTextField(
-                    hint: "Enter Password",
-                    label: "Password",
-                    isPassword: true,
-                    controller: _password,
-                  ),
-                  const SizedBox(height: 30),
-                  CustomButton(
-                    label: "Signup",
-                    onPressed: _signup,
-                  ),
-                  const SizedBox(height: 50),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text("Already have an account? "),
-                      InkWell(
-                        onTap: () => Get.toNamed(cr('login')),
-                        child: const Text(
-                          "Signin",
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      )
-                    ],
-                  ),
-                ],
+    return Obx(() {
+      return Scaffold(
+        appBar: appCustom(),
+        body: FormField(
+          key: formKey,
+          builder: (context) {
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 50),
+                    CustomTextField(
+                      hint: "Enter Name",
+                      label: "Name",
+                      controller: _name,
+                    ),
+                    const SizedBox(height: 20),
+                    CustomTextField(
+                      hint: "Enter Email",
+                      label: "Email",
+                      controller: _email,
+                    ),
+                    const SizedBox(height: 20),
+                    CustomTextField(
+                      hint: "Enter Password",
+                      label: "Password",
+                      isPassword: true,
+                      controller: _password,
+                    ),
+                    const SizedBox(height: 30),
+                    CustomButton(
+                      label: "Signup",
+                      onPressed: _signup,
+                    ),
+                    const SizedBox(height: 50),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text("Already have an account? "),
+                        InkWell(
+                          onTap: () => Get.toNamed(cr('login')),
+                          child: const Text(
+                            "Signin",
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        },
-      ),
-    );
+            );
+          },
+        ),
+      );
+    });
   }
 }

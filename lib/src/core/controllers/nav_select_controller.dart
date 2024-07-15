@@ -14,7 +14,7 @@ class NavSelectController extends GetxController {
   int get selectedIndex => _selectedIndex.value;
 
   Future<void> init() async {
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 100));
     changeDestination(0);
   }
 
@@ -23,8 +23,6 @@ class NavSelectController extends GetxController {
   }
 
   Widget getScreen() {
-    log("Selected Index: $selectedIndex");
-
     switch (selectedIndex) {
       case 0:
         return const HomeScreen();

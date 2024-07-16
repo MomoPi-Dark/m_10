@@ -43,23 +43,27 @@ class _SettingScreenState extends State<SettingScreen> {
                 title: Text(
                   user.displayName,
                   style: bodyTextStyle.copyWith(
-                    fontSize: 15.0,
+                    fontSize: 17.0,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 subtitle: Text(
                   user.email,
                   style: bodyTextStyle.copyWith(
-                    fontSize: 12.0,
+                    fontSize: 14.0,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
                 leading: ClipRRect(
-                  borderRadius: BorderRadius.circular(25.0),
-                  child: SvgPicture.asset(
-                    "assets/icons/profile.svg",
-                    width: 50.0,
-                    height: 50.0,
+                  borderRadius: BorderRadius.circular(50.0),
+                  child: CircleAvatar(
+                    radius: 25.0,
+                    backgroundImage: (_user.currentUser != null &&
+                            _user.currentUser!.photoURL.isNotEmpty)
+                        ? NetworkImage(
+                            _user.currentUser!.photoURL,
+                          )
+                        : null,
                   ),
                 ),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 20.0),

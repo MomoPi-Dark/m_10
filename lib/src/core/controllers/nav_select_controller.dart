@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:enefty_icons/enefty_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,7 +12,7 @@ class NavSelectController extends GetxController {
   int get selectedIndex => _selectedIndex.value;
 
   Future<void> init() async {
-    await Future.delayed(const Duration(milliseconds: 100));
+    await Future.delayed(const Duration(milliseconds: 1));
     changeDestination(0);
   }
 

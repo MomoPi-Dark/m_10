@@ -165,7 +165,6 @@ class _TaskScreenState extends State<TaskScreen> {
           existingTask == null ? "Add Task" : "Edit Task",
           style: appBarTitleStyle,
         ),
-        centerTitle: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(

@@ -6,7 +6,6 @@ import 'package:menejemen_waktu/src/core/controllers/theme_controller.dart';
 import 'package:menejemen_waktu/src/core/controllers/user_controller.dart';
 import 'package:menejemen_waktu/src/core/services/auth_service.dart';
 import 'package:menejemen_waktu/src/ui/screens/_layout/appbar.dart';
-import 'package:menejemen_waktu/src/ui/screens/_layout/title_app.dart';
 import 'package:menejemen_waktu/src/ui/widgets/custom_button.dart';
 import 'package:menejemen_waktu/src/ui/widgets/text_field.dart';
 
@@ -44,22 +43,25 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     if (_email.text.isEmpty || _password.text.isEmpty) {
-      Get.snackbar("Login Errors", "Email or Password is empty",
-          backgroundColor: Colors.red);
+      _setError(true);
       return;
     }
 
     try {
       await _user.login(_email.text, _password.text);
     } catch (e) {
-      setState(() {
-        _isEmailNotValid = true;
-        _isPasswordNotValid = true;
-      });
-
-      _email.clear();
-      _password.clear();
+      _setError(true);
     }
+  }
+
+  void _setError(bool value) {
+    setState(() {
+      _isEmailNotValid = value;
+      _isPasswordNotValid = value;
+    });
+
+    _email.clear();
+    _password.clear();
   }
 
   @override

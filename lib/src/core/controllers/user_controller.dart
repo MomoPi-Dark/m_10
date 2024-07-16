@@ -6,32 +6,25 @@ import 'package:get/get.dart';
 import 'package:menejemen_waktu/src/core/models/user_builder.dart';
 import 'package:menejemen_waktu/src/core/services/auth_service.dart';
 import 'package:menejemen_waktu/src/core/services/database_service.dart';
-import 'package:menejemen_waktu/src/utils/contants/contants.dart';
 
 class UserController extends GetxController {
   final AuthService _auth = AuthService();
   final AuthService _authData = AuthService();
-  final Rx<StateLoad> _connectionState = StateLoad.waiting.obs;
   final DatabaseService _db = DatabaseService();
-
   final String _requiredField = 'userId';
   final String _tableName = 'users';
-
   final Rx<UserBuilder?> _user = Rx<UserBuilder?>(null);
   StreamSubscription<DocumentSnapshot>? _userSubscription;
 
   RxBool get isLoggedIn => (_user.value != null).obs;
 
   UserBuilder? get currentUser => _user.value;
+  String get currentUsername => _auth.currentUserName;
 
   Future<UserBuilder?> initUser() async {
-    if (_authData.currentUser == null ||
-        _connectionState.value == StateLoad.loading ||
-        _user.value != null) {
+    if (_authData.currentUser == null || _user.value != null) {
       return null;
     }
-
-    await _setStateLoad(StateLoad.loading);
 
     var user = await getUser(_authData.currentUser!.uid);
 
@@ -42,22 +35,14 @@ class UserController extends GetxController {
     _user.value = user;
     _subscribeToUser(user.id);
 
-    await _setStateLoad(StateLoad.done, delay: 500);
-
     log('User screen initialized ${_user.value?.displayName}');
     return user;
   }
 
   Future<void> initCloseUser() async {
-    log('User screen closed');
-
-    if (_authData.currentUser != null ||
-        _connectionState.value == StateLoad.loading ||
-        _user.value == null) {
+    if (_authData.currentUser != null || _user.value == null) {
       return;
     }
-
-    await _setStateLoad(StateLoad.loading);
 
     _user.value = null;
 
@@ -66,7 +51,7 @@ class UserController extends GetxController {
       _userSubscription = null;
     }
 
-    await _setStateLoad(StateLoad.waiting, delay: 500);
+    log('User screen closed');
   }
 
   Future<UserBuilder?> updateUser(UserBuilder user) async {
@@ -171,13 +156,8 @@ class UserController extends GetxController {
     }
   }
 
-  Future<void> _setStateLoad(StateLoad value, {int delay = 1}) async {
-    await _setDelay(milliseconds: delay);
-    _connectionState.value = value;
-  }
-
-  Future<void> _setDelay({required int milliseconds}) {
-    return Future.delayed(Duration(milliseconds: milliseconds));
+  Future<void> _setDelay({required Duration durations}) {
+    return Future.delayed(durations);
   }
 
   Future<void> _subscribeToUser(String userId) async {
@@ -189,7 +169,7 @@ class UserController extends GetxController {
         if (documentSnapshot.exists) {
           final userData = documentSnapshot.data();
           if (userData != null) {
-            await Future.delayed(const Duration(milliseconds: 500));
+            await _setDelay(durations: const Duration(milliseconds: 500));
             _user.value = UserBuilder.fromJson(userData);
             // log('User data updated: ${_user.value?.displayName}');
           } else {

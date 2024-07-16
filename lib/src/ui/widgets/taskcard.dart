@@ -69,6 +69,7 @@ class _TaskCardState extends State<TaskCard> {
         Icons.more_vert,
         color: _themeData.isDarkMode() ? Colors.white : Colors.grey[700],
       ),
+      color: _themeData.isDarkMode() ? Colors.black : Colors.white,
       onSelected: (result) async {
         if (result == "edit") {
           Get.toNamed(

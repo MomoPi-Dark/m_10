@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -35,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildTitle() {
+    log(userData.currentUsername);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -47,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         Text(
-          userData.currentUser!.displayName,
+          userData.currentUsername,
           style: bodyTextStyle.copyWith(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -180,15 +183,12 @@ class _HomeScreenState extends State<HomeScreen> {
       title: _buildTitle(),
       toolbarHeight: 85.0,
       actions: [
-        Container(
-          margin: const EdgeInsets.only(right: 10),
-          child: const CircleAvatar(
-            radius: 25,
-            backgroundImage: AssetImage(
-              "assets/images/person2.jpg",
-            ),
+        CircleAvatar(
+          radius: 25,
+          backgroundImage: NetworkImage(
+            userData.currentUser!.photoURL,
           ),
-        ),
+        )
       ],
       bodyChild: _buildBody(),
     );

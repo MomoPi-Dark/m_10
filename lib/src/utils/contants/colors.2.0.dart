@@ -54,6 +54,11 @@ Color get defaultContainerSecondaryLayoutColor => createThemeColorSchema(
       lightColor: LightColor.secondary(),
     );
 
+Color get defaultContainerPrimaryLayoutColor => createThemeColorSchema(
+      darkColor: DarkColor.primary(),
+      lightColor: LightColor.primary(),
+    );
+
 // APP BAR \\
 
 Color get customAppBarLayoutColor => createThemeColorSchema(

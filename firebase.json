@@ -9,7 +9,7 @@
         }
       },
       "dart": {
-        "lib/configs/firebase_options.dart": {
+        "lib/configs_public/firebase_options.dart": {
           "projectId": "clockproject-23139",
           "configurations": {
             "android": "1:832811627488:android:ca4ef953a663000a243185",

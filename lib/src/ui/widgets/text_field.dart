@@ -51,7 +51,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           Text(
             widget.label!,
             style: defaultTextStyle.copyWith(
-              color: primaryGrey,
+              color: defaultTextPrimaryLayoutColor,
               fontSize: 16,
             ),
           ),

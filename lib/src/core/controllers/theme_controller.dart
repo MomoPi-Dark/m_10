@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,10 +20,8 @@ class ThemeController extends GetxController {
     init();
   }
 
-  Future<void> init() async {
+  void init() {
     String? getTheme = storeTheme.read("theme");
-
-    log("Init ThemeController");
 
     if (getTheme != null) {
       setThemeData(parseThemeMode(getTheme));
@@ -46,6 +43,11 @@ class ThemeController extends GetxController {
           backgroundColor: DarkColor.primary(),
           iconTheme: IconThemeData(color: LightColor.primary()),
         ),
+        dialogTheme: DialogTheme(
+          backgroundColor: DarkColor.primary(),
+          titleTextStyle: TextStyle(color: LightColor.primary()),
+          contentTextStyle: TextStyle(color: LightColor.primary()),
+        ),
       );
 
   ThemeData get lightMode => ThemeData(
@@ -60,6 +62,11 @@ class ThemeController extends GetxController {
         appBarTheme: AppBarTheme(
           backgroundColor: LightColor.primary(),
           iconTheme: IconThemeData(color: DarkColor.primary()),
+        ),
+        dialogTheme: DialogTheme(
+          backgroundColor: LightColor.primary(),
+          titleTextStyle: TextStyle(color: DarkColor.primary()),
+          contentTextStyle: TextStyle(color: DarkColor.primary()),
         ),
       );
 

@@ -8,7 +8,7 @@ class AuthService {
 
   User? get currentUser => _auth.currentUser;
 
-  String? get currentUserName =>
+  String get currentUserName =>
       _auth.currentUser?.displayName ??
       _auth.currentUser?.email?.split("@").first ??
       "Unknown User";

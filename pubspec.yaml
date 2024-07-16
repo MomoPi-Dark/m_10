@@ -54,6 +54,8 @@ dependencies:
   timeline_tile: ^2.0.0
   timezone: ^0.9.3
   unicons: ^2.1.2
+  firebase_app_check: any
+  http: any
 
 dev_dependencies:
   flutter_lints: ^4.0.0
@@ -75,3 +77,4 @@ flutter:
         - asset: assets/fonts/SF/Display/SF-Pro-Display-Regular.ttf
         - asset: assets/fonts/SF/Display/SF-Pro-Display-SemiBold.ttf
           weight: 600
+

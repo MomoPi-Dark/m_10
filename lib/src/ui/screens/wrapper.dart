@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:menejemen_waktu/src/core/controllers/nav_select_controller.dart';
 import 'package:menejemen_waktu/src/core/controllers/task_controller.dart';
@@ -29,7 +28,7 @@ class _WrapperState extends State<Wrapper> {
   @override
   void initState() {
     super.initState();
-    _themeData.setUIColor();
+    _themeData.init();
     _navData.init();
   }
 
@@ -37,22 +36,8 @@ class _WrapperState extends State<Wrapper> {
     final themeData = Get.find<ThemeController>();
 
     return Obx(() {
-      // // Set the status bar to be invisible when this screen is displayed
-      // SystemChrome.setSystemUIOverlayStyle(
-      //   SystemUiOverlayStyle.dark.copyWith(
-      //     statusBarColor: Colors.transparent,
-      //     statusBarIconBrightness: Brightness.light,
-      //   ),
-      // );
-
       return Scaffold(
         backgroundColor: themeData.currentTheme().primaryColor,
-        body: Center(
-          child: Image.asset(
-            'assets/images/pp.jpg', // Replace with your image asset path
-            fit: BoxFit.contain,
-          ),
-        ),
       );
     });
   }

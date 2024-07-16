@@ -6,7 +6,6 @@ import 'package:menejemen_waktu/src/core/controllers/theme_controller.dart';
 import 'package:menejemen_waktu/src/core/controllers/user_controller.dart';
 import 'package:menejemen_waktu/src/ui/screens/_components/welcome_image.dart';
 import 'package:menejemen_waktu/src/ui/screens/_layout/appbar.dart';
-import 'package:menejemen_waktu/src/ui/screens/_layout/title_app.dart';
 import 'package:menejemen_waktu/src/utils/contants/colors.2.0.dart';
 
 class GuestScreen extends StatefulWidget {

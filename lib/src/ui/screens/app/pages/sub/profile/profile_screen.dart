@@ -14,11 +14,19 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  late TextEditingController _nameController;
   late TextEditingController _emailController;
+  late TextEditingController _nameController;
   late TextEditingController _phoneController;
-
   final _userData = Get.find<UserController>();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -34,15 +42,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _emailController.text = user.email;
       _phoneController.text = user.phoneNumber;
     }
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
-
-    super.dispose();
   }
 
   @override
@@ -68,7 +67,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               placeholder: "Enter your name",
               keyboardType: TextInputType.text,
               controller: _nameController,
-              onSubmit: (_) {},
+              onSubmit: (value) {
+                _userData.currentUser!.changeDisplayName(value);
+                _userData.updateUser(_userData.currentUser!);
+              },
             ),
             BuildFieldText(
               readOnly: true,
@@ -77,7 +79,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               placeholder: "Enter your email",
               keyboardType: TextInputType.emailAddress,
               controller: _emailController,
-              onSubmit: (_) {},
+              onSubmit: (value) {
+                _userData.currentUser!.changeEmail(value);
+                _userData.updateUser(_userData.currentUser!);
+              },
             ),
             BuildFieldText(
               readOnly: true,
@@ -86,7 +91,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               placeholder: "Enter your phone number",
               keyboardType: TextInputType.phone,
               controller: _phoneController,
-              onSubmit: (_) {},
+              onSubmit: (value) {
+                _userData.currentUser!.changePhoneNumber(value);
+                _userData.updateUser(_userData.currentUser!);
+              },
             ),
           ],
         ),
